@@ -1,0 +1,263 @@
+---
+title: Triple Weighting
+author: 
+    - name: Jan de Leeuw
+      orcid: 0000-0003-1420-1797
+      email: jan@deleeuwpdx.net
+      affiliation: 
+        - name: University of California Los Angeles
+          city: Los Angeles
+          state: CA
+          url: www.ucla.edu
+      license: "CC0"
+date: last-modified
+date-format: long
+bibliography: [mypubs.bib, total.bib]
+number-sections: true
+pdf-engine: lualatex
+keep-tex: true
+format:
+   pdf:
+    fontsize: 12pt
+    include-in-header: 
+     - preamble.tex
+    keep-tex: true
+    link-citations: true
+    documentclass: scrartcl
+    number-sections: true
+   html:
+    fontsize: 12pt
+    include-in-header: 
+     - preamble.css
+    keep-md: true
+    number-sections: true
+toc: true
+toc-depth: 3
+editor: source
+papersize: letter
+graphics: true
+link-citations: true
+mainfont: Times New Roman
+abstract: TBD
+---
+
+```{r loadpackages, echo = FALSE}
+suppressPackageStartupMessages(library(knitr, quietly = TRUE))
+suppressPackageStartupMessages(library(tinytex, quietly = TRUE))
+```
+
+\sectionbreak 
+
+**Note:** This is a working manuscript which will be expanded/updated
+frequently. All suggestions for improvement are welcome. All Rmd, tex,
+html, pdf, R, and C files are in the public domain. Attribution will be
+appreciated, but is not required. The files can be found at
+<https://github.com/deleeuw/triple> 
+
+\sectionbreak
+
+# Result
+
+::: {#thm-major}
+Suppose $X$ is $n\times m$ and $R$ and $C$ are positive semi-definite of orders $n$ and $m$. Define 
+$$
+\sigma(X):=\|R^\frac12XC^\frac12\|^2.
+$$
+Suppose $\tilde X$ is any other $n\times m$ matrix. Define
+$\tilde G:=R\tilde XC$ and $\tilde V:=\tilde X-\tilde G$. Then
+$$
+\sigma(X)\leq\sigma(\tilde X)+\lambda\|X-\tilde V\|^2-\lambda^{-1}\|\tilde G\|^2
+$$
+where $\lambda$ is larger than or equal to the largest eigenvalue of $R\otimes C$ (the product of the largest eigenvalues of $R$ and $C$).
+:::
+
+::: {.proof}
+If $x:=\text{vec}(X)$ then, using the Kronecker Product, $\sigma(X)=x'(C\otimes R)x$. Write
+$x=\tilde x+(x-\tilde x)$. Then
+\begin{multline}
+\sigma(x)=\sigma(\tilde x)+2(x-\tilde x)'(C\otimes R)\tilde x+(x-\tilde x)'(C\otimes R)(x-\tilde x)'\leq\\\sigma(\tilde x)+2(x-\tilde x)'(C\otimes R)\tilde x+\lambda(x-\tilde x)'(x-\tilde x).
+\end{multline}
+Completing the square, rearranging terms, and using $\text{vec}(R\tilde XC)=(C\otimes R)\tilde x$ gives the
+required result.
+:::
+
+```{r echo = FALSE}
+set.seed(12345)
+r <- crossprod(matrix(rnorm(400), 100, 4))/100
+c <- crossprod(matrix(rnorm(300), 100, 3))/100
+re <- eigen(r)
+ce <- eigen(c)
+rh <- tcrossprod(re$vectors %*% diag(sqrt(re$values)), re$vectors)
+ch <- tcrossprod(ce$vectors %*% diag(sqrt(ce$values)), ce$vectors)
+kr <- kronecker(c, r)
+xmat <- matrix(rnorm(12), 4, 3)
+x <- as.vector(xmat)
+krx <- matrix(kr %*% x, 4, 3)
+l1 <- sum(x * (kr %*% x))
+l2 <- sum((rh %*% xmat %*% ch)^2)
+```
+Now suppose $X=W\star(Y-Z)$ and $\tilde X=W\star(Y-\tilde Z)$, with a parametrization of $Z$
+similar to that in WALS (@deleeuw_graffelman_E_22e). Thus
+\begin{equation}
+z_{ij}=\mu+r_i+c_j+\sum_{s=1}^pa_{is}b_{js}.
+\end{equation}
+For majorization to work it is necessary that $\tilde Z$ is of the same form.
+Using the majorization in @thm-major means that in each step we have to minimize (or at
+least decrease) the weighted sum
+\begin{equation}
+\sum_{i=1}^n\sum_{j=1}^mw_{ij}^2((y_{ij}-z_{ij})-\tilde v_{ij}/w_{ij})^2=\sum_{i=1}^n\sum_{j=1}^m w_{ij}^2(\tilde y_{ij}-z_{ij})^2
+\end{equation}
+with
+\begin{equation}
+\tilde y_{ij}:=y_{ij}-\frac{\tilde v_{ij}}{w_{ij}}.
+\end{equation}
+over $Z$, and we know how to do this.
+
+\sectionbreak
+
+# Decomposition
+
+
+And now for something completely different. The problem we study in
+this section is to approximate a $n\times m$ matrix $X$ by a matrix
+$Y$ with
+\begin{equation}
+y_{ij}=\mu+\alpha_i+\beta_j+\gamma_{ij}
+\end{equation}
+where 
+\begin{align}
+&\sum_{i=1}^n \alpha_i=0,\\
+&\sum_{j=1}^m \beta_j=0,\\
+&\sum_{i=1}^n \gamma_{ij}=0\qquad\forall j,\\
+&\sum_{j=1}^m \gamma_{ij}=0\qquad\forall i.
+\end{align}
+
+## Unweighted Least Squares
+
+Suppose $\mathbb{R}^{n\times m}$ is the space of all $n\times m$ matrices, with the inner product $\langle X,Y\rangle=\text{tr}\ X'Y$ and the corresponding squared norm $\|X\|^2=\text{tr}\ X'X$. We define four subspaces of $\mathbb{R}^{n\times m}$.
+
+1. The subspace $\mathbb{L}_0$ of all constant matrices.
+2. The subspace $\mathbb{L}_r$ of all matrices $ae'$ with $a$ centered.
+3. The subspace $\mathbb{L}_c$ of all matrices $eb'$ with $b$ centered.
+4. The subspace $\mathbb{L}_d$ of all doubly-centered matrices.
+
+These four subspaces are orthogonal and span $\mathbb{R}^{n\times m}$. Each $n\times m$ matrix $X$ can be written as $X=X_0+X_r+X_c+X_d$, where each of the four orthogonal components is the least squares projection of $X$ on the corresponding subspace. 
+
+We use the rank one symmetric projectors
+\begin{align}
+P&=\frac{1}{n}e_ne_n',\\
+Q&=\frac{1}{m}e_me_m'.
+\end{align}
+Now the parameter estimates are
+\begin{align}
+\mu&=PXQ,\label{eq-par1}\\
+\alpha&=(I-P)Xe_m/m,\label{eq-par2}\\
+\beta&=(I-Q)X'e_n/n,\label{eq-par3}\\
+\Gamma&=(I-P)X(I-Q).\label{eq-par4}
+\end{align}
+Thus $\alpha$ are the row averages in deviations from their mean,
+and $\beta$ the column averages in deviations from their mean, $\mu$
+is the overall mean of $X$, and $\Gamma$ is the doubly-centered
+version of $X$.
+
+It follows that
+\begin{align}
+X_0&=\mu ee'=PXQ,\\
+X_r&=ae'=(I-P)XQ,\\
+X_c&=eb'=PX(I-Q),\\
+X_d&=Y=(I-P)X(I-Q).
+\end{align}
+Also
+$$
+\|X-Y\|^2=\|X_0-Y_0\|^2+\|X_r-Y_r\|^2+\|X_c-Y_c\|^2+\|X_d-Y_d\|^2
+$$
+As a consequence, minimizing $\|X-Y\|^2$ over $Y$ while requiring, for example, $Y_c=0$ has the solution $Y=X_0+X_r+X_d$. If we require that
+the row parameters $a$ are increasing we minimize $\|\hat a-a\|^2$
+over $a_1\leq\cdots\leq a_n$, with $\hat a$ the centered row-means. 
+The estimateds of $Y_0$, $Y_c$, and $Y_d$ remain the same., If we require
+that $Y$ is of rank $p<min(n,m)$ we just compute the low-rank
+least squares approximation of the doubly centered matrix $X_d$.
+
+## Kronecker Weighting
+
+The next step is to generalize these results to the inner product $\langle X,Y\rangle=\text{tr}\ RXCY'$ on $\mathbb{R}^{n\times m}$
+with squared norm $\|X\|^2=\text{tr}\ RXCX'$. Suppose $R$ and $C$ are both positive definite. We call this *Kronecker Weighting*.
+
+Now
+\begin{align}
+\langle \alpha e',ee'\rangle&=\text{tr}\ R\alpha e'Cee'=e'Ce\times e'R\alpha ,\\
+\langle \alpha e',e\beta'\rangle&=\text{tr}\ R\alpha e'C\beta e'=e'R\alpha \times e'C\beta,\\
+\langle \alpha e',Y\rangle&=\text{tr}\ R\alpha e'CY'=\alpha 'RYCe.
+\end{align}
+Thus our four orthogonal subspaces are:
+
+1. The subspace $\mathbb{L}_0$ of all constant matrices $\mu ee'$.
+2. The subspace $\mathbb{L}_r$ of all matrices $\alpha e'$ with $\alpha 'Re=0$.
+3. The subspace $\mathbb{L}_c$ of all matrices $e\beta'$ with $\beta'Ce=0$.
+4. The subspace $\mathbb{L}_d$ of all matrices $Y$ with $YCe=0$ and $Y'Re=0$.
+
+We now compute projections in the weighted Kronecker metric on these 
+subspaces. For this we use idempotent, asymmetric rank-one projectors.
+\begin{align}
+P&=\frac{ee'R}{e'Re},\\
+Q&=\frac{Cee'}{e'Ce}
+\end{align}
+and their complements $I-P$ and $I-Q$. 
+Note that $P^2=P$ and $Q^2=Q$ so that $P(I-P)=0$ and $Q(I-Q)=0$.
+
+The solution for the parameters are
+\begin{align}
+\hat\mu&=PXQ,\\
+\hat\alpha&=(I-P)XCe/e'Ce,\\
+\hat\beta'&=e'RX(I-Q)/e'Re,\\
+\hat Y&=(I-P)X(I-Q).
+\end{align}
+so that
+\begin{align}
+\hat\alpha e'&=(I-P)XQ,\\
+e\hat\beta'&=PX(I-Q),
+\end{align}
+and
+\begin{equation}
+X=\hat\mu+\hat\alpha e'+e\hat\beta'+\hat Y
+\end{equation}
+
+If $R$ and/or $C$ is singular we have to be careful. As long as 
+$Ce\neq 0$ and $Re\neq 0$ there is no problem. If $Ce=0$ then
+the components $\mu ee'$ and $\alpha e'$ drop out of the problem
+and we have the decomposition $X=e\beta'+Y$. Since
+$$
+\langle  eb',Y\rangle=\text{tr}\ Reb'CY'=b'CY'Re
+$$
+for orthogonality $Y$ must satisfy $CY'Re=0$.
+
+
+
+The results in this section, and those in the special case discussed in the previous section, can be extended to higher-dimensional arrays.
+
+## Precision Weights
+
+There are inner products on matrix space for which the previous
+results are not all true. Consider, for example, the inner product 
+$$
+\langle X,Y\rangle=\sum_{i=1}^n\sum_{j=1}^m w_{ij}x_{ij}y_{ij}
+$$
+For this inner product 
+\begin{align}
+<\alpha e',ee'>&=\sum_{i=1}^n\alpha_i\sum_{j=1}^m w_{ij},\\
+<\alpha e',e\beta'>&=\sum_{i=1}^n\sum_{j=1}^m w_{ij}\alpha_i\beta_j
+\end{align}
+The second inner product is zero for arbitrary $\alpha$ and $\beta$
+if and only if $W$ is zero, which is not a very interesting situation.
+The projection $P$ of $X$ on $\alpha e'$ is $x_re'$, with $x_r$ the vector of weighted row means in deviations from the total mean. Symmetrically $Q$ is $ex_c'$, using the weighted column means.
+
+Trivially it is always true that
+$$
+X=PXQ+(I-P)XQ+PX(I-Q)+(I-P)X(I-Q)
+$$
+For this $P$ and $Q$ do not even have to be projectors. 
+
+
+
+
+# References

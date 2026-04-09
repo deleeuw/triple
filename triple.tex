@@ -1,0 +1,476 @@
+% Options for packages loaded elsewhere
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\PassOptionsToPackage{dvipsnames,svgnames,x11names}{xcolor}
+%
+\documentclass[
+  12pt,
+  letterpaper,
+  DIV=11,
+  numbers=noendperiod]{scrartcl}
+\usepackage{xcolor}
+\usepackage{amsmath,amssymb}
+\setcounter{secnumdepth}{5}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+  \setmainfont[]{Times New Roman}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+% Make \paragraph and \subparagraph free-standing
+\makeatletter
+\ifx\paragraph\undefined\else
+  \let\oldparagraph\paragraph
+  \renewcommand{\paragraph}{
+    \@ifstar
+      \xxxParagraphStar
+      \xxxParagraphNoStar
+  }
+  \newcommand{\xxxParagraphStar}[1]{\oldparagraph*{#1}\mbox{}}
+  \newcommand{\xxxParagraphNoStar}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+  \let\oldsubparagraph\subparagraph
+  \renewcommand{\subparagraph}{
+    \@ifstar
+      \xxxSubParagraphStar
+      \xxxSubParagraphNoStar
+  }
+  \newcommand{\xxxSubParagraphStar}[1]{\oldsubparagraph*{#1}\mbox{}}
+  \newcommand{\xxxSubParagraphNoStar}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+\makeatother
+
+
+\usepackage{longtable,booktabs,array}
+\newcounter{none} % for unnumbered tables
+\usepackage{calc} % for calculating minipage widths
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
+\usepackage{graphicx}
+\makeatletter
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi%
+}
+% Set default figure placement to htbp
+\def\fps@figure{htbp}
+\makeatother
+
+
+% definitions for citeproc citations
+\NewDocumentCommand\citeproctext{}{}
+\NewDocumentCommand\citeproc{mm}{%
+  \begingroup\def\citeproctext{#2}\cite{#1}\endgroup}
+\makeatletter
+ % allow citations to break across lines
+ \let\@cite@ofmt\@firstofone
+ % avoid brackets around text for \cite:
+ \def\@biblabel#1{}
+ \def\@cite#1#2{{#1\if@tempswa , #2\fi}}
+\makeatother
+\newlength{\cslhangindent}
+\setlength{\cslhangindent}{1.5em}
+\newlength{\csllabelwidth}
+\setlength{\csllabelwidth}{3em}
+\newenvironment{CSLReferences}[2] % #1 hanging-indent, #2 entry-spacing
+ {\begin{list}{}{%
+  \setlength{\itemindent}{0pt}
+  \setlength{\leftmargin}{0pt}
+  \setlength{\parsep}{0pt}
+  % turn on hanging indent if param 1 is 1
+  \ifodd #1
+   \setlength{\leftmargin}{\cslhangindent}
+   \setlength{\itemindent}{-1\cslhangindent}
+  \fi
+  % set entry spacing
+  \setlength{\itemsep}{#2\baselineskip}}}
+ {\end{list}}
+\usepackage{calc}
+\newcommand{\CSLBlock}[1]{\hfill\break\parbox[t]{\linewidth}{\strut\ignorespaces#1\strut}}
+\newcommand{\CSLLeftMargin}[1]{\parbox[t]{\csllabelwidth}{\strut#1\strut}}
+\newcommand{\CSLRightInline}[1]{\parbox[t]{\linewidth - \csllabelwidth}{\strut#1\strut}}
+\newcommand{\CSLIndent}[1]{\hspace{\cslhangindent}#1}
+
+
+
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+
+
+
+ 
+
+
+\usepackage{tcolorbox}
+\usepackage{amssymb}
+\usepackage{yfonts}
+\usepackage{bm}
+
+
+\newtcolorbox{greybox}{
+  colback=white,
+  colframe=blue,
+  coltext=black,
+  boxsep=5pt,
+  arc=4pt}
+  
+\newcommand{\sectionbreak}{\clearpage}
+
+ 
+\newcommand{\ds}[4]{\sum_{{#1}=1}^{#3}\sum_{{#2}=1}^{#4}}
+\newcommand{\us}[3]{\mathop{\sum\sum}_{1\leq{#2}<{#1}\leq{#3}}}
+
+\newcommand{\ol}[1]{\overline{#1}}
+\newcommand{\ul}[1]{\underline{#1}}
+
+\newcommand{\amin}[1]{\mathop{\text{argmin}}_{#1}}
+\newcommand{\amax}[1]{\mathop{\text{argmax}}_{#1}}
+
+\newcommand{\ci}{\perp\!\!\!\perp}
+
+\newcommand{\mc}[1]{\mathcal{#1}}
+\newcommand{\mb}[1]{\mathbb{#1}}
+\newcommand{\mf}[1]{\mathfrak{#1}}
+
+\newcommand{\eps}{\epsilon}
+\newcommand{\lbd}{\lambda}
+\newcommand{\alp}{\alpha}
+\newcommand{\df}{=:}
+\newcommand{\am}[1]{\mathop{\text{argmin}}_{#1}}
+\newcommand{\ls}[2]{\mathop{\sum\sum}_{#1}^{#2}}
+\newcommand{\ijs}{\mathop{\sum\sum}_{1\leq i<j\leq n}}
+\newcommand{\jis}{\mathop{\sum\sum}_{1\leq j<i\leq n}}
+\newcommand{\sij}{\sum_{i=1}^n\sum_{j=1}^n}
+	
+\KOMAoption{captions}{tableheading}
+\makeatletter
+\@ifpackageloaded{caption}{}{\usepackage{caption}}
+\AtBeginDocument{%
+\ifdefined\contentsname
+  \renewcommand*\contentsname{Table of contents}
+\else
+  \newcommand\contentsname{Table of contents}
+\fi
+\ifdefined\listfigurename
+  \renewcommand*\listfigurename{List of Figures}
+\else
+  \newcommand\listfigurename{List of Figures}
+\fi
+\ifdefined\listtablename
+  \renewcommand*\listtablename{List of Tables}
+\else
+  \newcommand\listtablename{List of Tables}
+\fi
+\ifdefined\figurename
+  \renewcommand*\figurename{Figure}
+\else
+  \newcommand\figurename{Figure}
+\fi
+\ifdefined\tablename
+  \renewcommand*\tablename{Table}
+\else
+  \newcommand\tablename{Table}
+\fi
+}
+\@ifpackageloaded{float}{}{\usepackage{float}}
+\floatstyle{ruled}
+\@ifundefined{c@chapter}{\newfloat{codelisting}{h}{lop}}{\newfloat{codelisting}{h}{lop}[chapter]}
+\floatname{codelisting}{Listing}
+\newcommand*\listoflistings{\listof{codelisting}{List of Listings}}
+\usepackage{amsthm}
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\theoremstyle{remark}
+\AtBeginDocument{\renewcommand*{\proofname}{Proof}}
+\newtheorem*{remark}{Remark}
+\newtheorem*{solution}{Solution}
+\newtheorem{refremark}{Remark}[section]
+\newtheorem{refsolution}{Solution}[section]
+\makeatother
+\makeatletter
+\makeatother
+\makeatletter
+\@ifpackageloaded{caption}{}{\usepackage{caption}}
+\@ifpackageloaded{subcaption}{}{\usepackage{subcaption}}
+\makeatother
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={Triple Weighting},
+  pdfauthor={Jan de Leeuw},
+  colorlinks=true,
+  linkcolor={blue},
+  filecolor={Maroon},
+  citecolor={Blue},
+  urlcolor={Blue},
+  pdfcreator={LaTeX via pandoc}}
+
+
+\title{Triple Weighting}
+\author{Jan de Leeuw}
+\date{April 9, 2026}
+\begin{document}
+\maketitle
+\begin{abstract}
+TBD
+\end{abstract}
+
+\renewcommand*\contentsname{Table of contents}
+{
+\setcounter{tocdepth}{3}
+\tableofcontents
+}
+
+\sectionbreak
+
+\textbf{Note:} This is a working manuscript which will be
+expanded/updated frequently. All suggestions for improvement are
+welcome. All Rmd, tex, html, pdf, R, and C files are in the public
+domain. Attribution will be appreciated, but is not required. The files
+can be found at \url{https://github.com/deleeuw/triple}
+
+\sectionbreak
+
+\section{Result}\label{result}
+
+\begin{theorem}[]\protect\hypertarget{thm-major}{}\label{thm-major}
+
+Suppose \(X\) is \(n\times m\) and \(R\) and \(C\) are positive
+semi-definite of orders \(n\) and \(m\). Define \[
+\sigma(X):=\|R^\frac12XC^\frac12\|^2.
+\] Suppose \(\tilde X\) is any other \(n\times m\) matrix. Define
+\(\tilde G:=R\tilde XC\) and \(\tilde V:=\tilde X-\tilde G\). Then \[
+\sigma(X)\leq\sigma(\tilde X)+\lambda\|X-\tilde V\|^2-\lambda^{-1}\|\tilde G\|^2
+\] where \(\lambda\) is larger than or equal to the largest eigenvalue
+of \(R\otimes C\) (the product of the largest eigenvalues of \(R\) and
+\(C\)).
+
+\end{theorem}
+
+\begin{proof}
+If \(x:=\text{vec}(X)\) then, using the Kronecker Product,
+\(\sigma(X)=x'(C\otimes R)x\). Write \(x=\tilde x+(x-\tilde x)\). Then
+\begin{multline}
+\sigma(x)=\sigma(\tilde x)+2(x-\tilde x)'(C\otimes R)\tilde x+(x-\tilde x)'(C\otimes R)(x-\tilde x)'\leq\\\sigma(\tilde x)+2(x-\tilde x)'(C\otimes R)\tilde x+\lambda(x-\tilde x)'(x-\tilde x).
+\end{multline} Completing the square, rearranging terms, and using
+\(\text{vec}(R\tilde XC)=(C\otimes R)\tilde x\) gives the required
+result.
+\end{proof}
+
+Now suppose \(X=W\star(Y-Z)\) and \(\tilde X=W\star(Y-\tilde Z)\), with
+a parametrization of \(Z\) similar to that in WALS (De Leeuw and
+Graffelman (\citeproc{ref-deleeuw_graffelman_E_22e}{2022})). Thus
+\begin{equation}
+z_{ij}=\mu+r_i+c_j+\sum_{s=1}^pa_{is}b_{js}.
+\end{equation} For majorization to work it is necessary that
+\(\tilde Z\) is of the same form. Using the majorization in
+Theorem~\ref{thm-major} means that in each step we have to minimize (or
+at least decrease) the weighted sum \begin{equation}
+\sum_{i=1}^n\sum_{j=1}^mw_{ij}^2((y_{ij}-z_{ij})-\tilde v_{ij}/w_{ij})^2=\sum_{i=1}^n\sum_{j=1}^m w_{ij}^2(\tilde y_{ij}-z_{ij})^2
+\end{equation} with \begin{equation}
+\tilde y_{ij}:=y_{ij}-\frac{\tilde v_{ij}}{w_{ij}}.
+\end{equation} over \(Z\), and we know how to do this.
+
+\sectionbreak
+
+\section{Decomposition}\label{decomposition}
+
+And now for something completely different. The problem we study in this
+section is to approximate a \(n\times m\) matrix \(X\) by a matrix \(Y\)
+with \begin{equation}
+y_{ij}=\mu+\alpha_i+\beta_j+\gamma_{ij}
+\end{equation} where \begin{align}
+&\sum_{i=1}^n \alpha_i=0,\\
+&\sum_{j=1}^m \beta_j=0,\\
+&\sum_{i=1}^n \gamma_{ij}=0\qquad\forall j,\\
+&\sum_{j=1}^m \gamma_{ij}=0\qquad\forall i.
+\end{align}
+
+\subsection{Unweighted Least Squares}\label{unweighted-least-squares}
+
+Suppose \(\mathbb{R}^{n\times m}\) is the space of all \(n\times m\)
+matrices, with the inner product \(\langle X,Y\rangle=\text{tr}\ X'Y\)
+and the corresponding squared norm \(\|X\|^2=\text{tr}\ X'X\). We define
+four subspaces of \(\mathbb{R}^{n\times m}\).
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  The subspace \(\mathbb{L}_0\) of all constant matrices.
+\item
+  The subspace \(\mathbb{L}_r\) of all matrices \(ae'\) with \(a\)
+  centered.
+\item
+  The subspace \(\mathbb{L}_c\) of all matrices \(eb'\) with \(b\)
+  centered.
+\item
+  The subspace \(\mathbb{L}_d\) of all doubly-centered matrices.
+\end{enumerate}
+
+These four subspaces are orthogonal and span \(\mathbb{R}^{n\times m}\).
+Each \(n\times m\) matrix \(X\) can be written as \(X=X_0+X_r+X_c+X_d\),
+where each of the four orthogonal components is the least squares
+projection of \(X\) on the corresponding subspace.
+
+We use the rank one symmetric projectors \begin{align}
+P&=\frac{1}{n}e_ne_n',\\
+Q&=\frac{1}{m}e_me_m'.
+\end{align} Now the parameter estimates are \begin{align}
+\mu&=PXQ,\label{eq-par1}\\
+\alpha&=(I-P)Xe_m/m,\label{eq-par2}\\
+\beta&=(I-Q)X'e_n/n,\label{eq-par3}\\
+\Gamma&=(I-P)X(I-Q).\label{eq-par4}
+\end{align} Thus \(\alpha\) are the row averages in deviations from
+their mean, and \(\beta\) the column averages in deviations from their
+mean, \(\mu\) is the overall mean of \(X\), and \(\Gamma\) is the
+doubly-centered version of \(X\).
+
+It follows that \begin{align}
+X_0&=\mu ee'=PXQ,\\
+X_r&=ae'=(I-P)XQ,\\
+X_c&=eb'=PX(I-Q),\\
+X_d&=Y=(I-P)X(I-Q).
+\end{align} Also \[
+\|X-Y\|^2=\|X_0-Y_0\|^2+\|X_r-Y_r\|^2+\|X_c-Y_c\|^2+\|X_d-Y_d\|^2
+\] As a consequence, minimizing \(\|X-Y\|^2\) over \(Y\) while
+requiring, for example, \(Y_c=0\) has the solution \(Y=X_0+X_r+X_d\). If
+we require that the row parameters \(a\) are increasing we minimize
+\(\|\hat a-a\|^2\) over \(a_1\leq\cdots\leq a_n\), with \(\hat a\) the
+centered row-means. The estimateds of \(Y_0\), \(Y_c\), and \(Y_d\)
+remain the same., If we require that \(Y\) is of rank \(p<min(n,m)\) we
+just compute the low-rank least squares approximation of the doubly
+centered matrix \(X_d\).
+
+\subsection{Kronecker Weighting}\label{kronecker-weighting}
+
+The next step is to generalize these results to the inner product
+\(\langle X,Y\rangle=\text{tr}\ RXCY'\) on \(\mathbb{R}^{n\times m}\)
+with squared norm \(\|X\|^2=\text{tr}\ RXCX'\). Suppose \(R\) and \(C\)
+are both positive definite. We call this \emph{Kronecker Weighting}.
+
+Now \begin{align}
+\langle \alpha e',ee'\rangle&=\text{tr}\ R\alpha e'Cee'=e'Ce\times e'R\alpha ,\\
+\langle \alpha e',e\beta'\rangle&=\text{tr}\ R\alpha e'C\beta e'=e'R\alpha \times e'C\beta,\\
+\langle \alpha e',Y\rangle&=\text{tr}\ R\alpha e'CY'=\alpha 'RYCe.
+\end{align} Thus our four orthogonal subspaces are:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  The subspace \(\mathbb{L}_0\) of all constant matrices \(\mu ee'\).
+\item
+  The subspace \(\mathbb{L}_r\) of all matrices \(\alpha e'\) with
+  \(\alpha 'Re=0\).
+\item
+  The subspace \(\mathbb{L}_c\) of all matrices \(e\beta'\) with
+  \(\beta'Ce=0\).
+\item
+  The subspace \(\mathbb{L}_d\) of all matrices \(Y\) with \(YCe=0\) and
+  \(Y'Re=0\).
+\end{enumerate}
+
+We now compute projections in the weighted Kronecker metric on these
+subspaces. For this we use idempotent, asymmetric rank-one projectors.
+\begin{align}
+P&=\frac{ee'R}{e'Re},\\
+Q&=\frac{Cee'}{e'Ce}
+\end{align} and their complements \(I-P\) and \(I-Q\). Note that
+\(P^2=P\) and \(Q^2=Q\) so that \(P(I-P)=0\) and \(Q(I-Q)=0\).
+
+The solution for the parameters are \begin{align}
+\hat\mu&=PXQ,\\
+\hat\alpha&=(I-P)XCe/e'Ce,\\
+\hat\beta'&=e'RX(I-Q)/e'Re,\\
+\hat Y&=(I-P)X(I-Q).
+\end{align} so that \begin{align}
+\hat\alpha e'&=(I-P)XQ,\\
+e\hat\beta'&=PX(I-Q),
+\end{align} and \begin{equation}
+X=\hat\mu+\hat\alpha e'+e\hat\beta'+\hat Y
+\end{equation}
+
+If \(R\) and/or \(C\) is singular we have to be careful. As long as
+\(Ce\neq 0\) and \(Re\neq 0\) there is no problem. If \(Ce=0\) then the
+components \(\mu ee'\) and \(\alpha e'\) drop out of the problem and we
+
+The results in this section, and those in the special case discussed in
+the previous section, can be extended to higher-dimensional arrays.
+
+\subsection{Precision Weights}\label{precision-weights}
+
+There are inner products on matrix space for which the previous results
+are not all true. Consider, for example, the inner product \[
+\langle X,Y\rangle=\sum_{i=1}^n\sum_{j=1}^m w_{ij}x_{ij}y_{ij}
+\] For this inner product \begin{align}
+<\alpha e',ee'>&=\sum_{i=1}^n\alpha_i\sum_{j=1}^m w_{ij},\\
+<\alpha e',e\beta'>&=\sum_{i=1}^n\sum_{j=1}^m w_{ij}\alpha_i\beta_j
+\end{align} The second inner product is zero for arbitrary \(\alpha\)
+and \(\beta\) if and only if \(W\) is zero, which is not a very
+interesting situation. The projection \(P\) of \(X\) on \(\alpha e'\) is
+\(x_re'\), with \(x_r\) the vector of weighted row means in deviations
+from the total mean. Symmetrically \(Q\) is \(ex_c'\), using the
+weighted column means.
+
+Trivially it is always true that \[
+X=PXQ+(I-P)XQ+PX(I-Q)+(I-P)X(I-Q)
+\] For this \(P\) and \(Q\) do not even have to be projectors.
+
+\section*{References}\label{references}
+\addcontentsline{toc}{section}{References}
+
+\protect\phantomsection\label{refs}
+\begin{CSLReferences}{1}{1}
+\bibitem[\citeproctext]{ref-deleeuw_graffelman_E_22e}
+De Leeuw, Jan, and Jan Graffelman. 2022. {``wAddPCA.''}
+\url{https://jansweb.netlify.app/publication/deleeuw-graffelman-e-22-e/deleeuw-graffelman-e-22-e.pdf}.
+
+\end{CSLReferences}
+
+
+
+
+\end{document}
