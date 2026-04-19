@@ -1,5 +1,5 @@
 ---
-title: Triple Weighting
+title: Matrix Approximation with Kronecker and Precision Weighting
 author: 
     - name: Jan de Leeuw
       orcid: 0000-0003-1420-1797
@@ -9,7 +9,8 @@ author:
           city: Los Angeles
           state: CA
           url: www.ucla.edu
-      license: "CC0"
+    - name: Jan Graffelman
+license: "CC0"
 date: last-modified
 date-format: long
 bibliography: [mypubs.bib, total.bib]
@@ -58,261 +59,79 @@ appreciated, but is not required. The files can be found at
 
 # Introduction
 
-:::{#thm-decomp}
-If $X$ is an $n\times m$ matrix then there exist
+The problem addressed in this note is to approximate a given $n\times m$ matrix $Y$
+by a $n\times m$ matrix $Z$ which must be in a given subset $\mathbb{Z}$ of
+$\mathbb{R}^{n\times m}$. For example, $\mathbb{Z}$ can be the $n\times m$
+matrices of rank less than or equal to $p$, or a set of special matrices, such as
+Hankel or Cauchy matrices.
+
+We measure loss using
 \begin{equation}
-x_{ij}=\mu+\alpha_i+\beta_j+\gamma_{ij}
+\sigma(Z):=\text{tr}\ R(W\circ(Y-Z))C(W\circ(Y-Z))'.\label{eq-loss}
 \end{equation}
-where 
-\begin{align}
-&\sum_{i=1}^n \alpha_i=0,\\
-&\sum_{j=1}^m \beta_j=0,\\
-&\sum_{i=1}^n \gamma_{ij}=0\qquad\forall j,\\
-&\sum_{j=1}^m \gamma_{ij}=0\qquad\forall i.
-\end{align}
-:::
+In Definition \eqref{eq-loss} $R$ and $C$ are given positive sem-definite matrices of orders $n$ and $m$, which define the *Kronecker weights*. The Kronecker weights can be, for example, inverse
+covariance matrices for row and column entries, as in the matrix variate normal distribution
+(@gupta_nagar_00). The $n\times m$ matrix $W$ of *precision weights* has positive entries, which can be, for example, inverse standard errors of the corresponding entries of $Y$. The symbol $\circ$ is used for Hadamard (elementwise) multiplication.
 
-# Projectors
+\sectionbreak
 
-Suppose $\mathbb{L}$ is a vector space
-A *projector* $P$ is a linear function of $\mathbb{L}$ into $\mathbb{L}$ that satisfies $P(P(x))=P(x)$. If $P$ is a projector, then so is $I-P$, and $P(I-P)=0$. A projector satisfies $P\lesssim I$, 
+# Algorithm
 
+Our algorithm uses majorization (or MM). See @lange_16 for comprehensive discussion of MM.
+Majorization is used to reduce the weighted least squares problem to an unweighted
+least squares problem, which is generally much easier to solve. Similar applications 
+of MM are in @kiers_97 and in @groenen_giaquinto_kiers_03. 
 
-Two projectors $P$ and $Q$ are orthogonal if $PQ=0$. Thus $P$ and $I-P$ are orthogonal. If $P_1,\cdots,P_t$ are orthogonal, i.e $P_sP_t=0$ for all $s\neq t$, 
-
-Suppose $L_P=\{x\in L\mid P(x)=x\}$. If $x\in L$ and $y\in L_P$ then by linearity $P(\alpha x+\beta y)=P(\alpha x)+P(\beta y)=\alpha P(x)+\beta P(y)=alpha x+\beta y$ and $alpha x+\beta y$ is in $L_P$ and $L_p$ is a subspace of $L$.
-$$
-\min_{y\in\mathbb{L}}\|x-y\|^2\leq\|x-(y+z)\|^2=\|x-y\|^2-2\langle x-y,z\rangle+\|z\|^2
-$$
-$$
-\|x\|^2-2\langle x,y\rangle+\|y\|^2
-$$
-
-projectors and subspaces
-
-projectors and basis
-
-
-
-## Unweighted Least Squares
-
-Suppose $\mathbb{R}^{n\times m}$ is the space of all $n\times m$ matrices, with the inner product $\langle X,Y\rangle=\text{tr}\ X'Y$ and the corresponding squared norm $\|X\|^2=\text{tr}\ X'X$. We define four subspaces of $\mathbb{R}^{n\times m}$.
-
-1. The subspace $\mathbb{L}_0$ of all constant matrices.
-2. The subspace $\mathbb{L}_r$ of all matrices $ae'$ with $a$ centered.
-3. The subspace $\mathbb{L}_c$ of all matrices $eb'$ with $b$ centered.
-4. The subspace $\mathbb{L}_d$ of all doubly-centered matrices.
-
-These four subspaces are orthogonal and span $\mathbb{R}^{n\times m}$. Each $n\times m$ matrix $X$ can be written as $X=X_0+X_r+X_c+X_d$, where each of the four orthogonal components is the least squares projection of $X$ on the corresponding subspace. 
-
-We use the rank one symmetric projectors
-\begin{align}
-P&=\frac{1}{n}e_ne_n',\\
-Q&=\frac{1}{m}e_me_m'.
-\end{align}
-Now the parameter estimates are
-\begin{align}
-\hat\mu&=PXQ,\label{eq-par1}\\
-\hat\alpha&=(I-P)Xe_m/m,\label{eq-par2}\\
-\hat\beta&=(I-Q)X'e_n/n,\label{eq-par3}\\
-\hat\Gamma&=(I-P)X(I-Q).\label{eq-par4}
-\end{align}
-Thus $\hat\alpha$ are the row averages in deviations from their mean,
-and $\hat\beta$ the column averages in deviations from their mean, $\mu$
-is the overall mean of $X$, and $\hat\Gamma$ is the doubly-centered
-version of $X$.
-
-It follows that
-\begin{align}
-X_0&=\hat\mu ee'=PXQ,\\
-X_r&=\hat\alpha e'=(I-P)XQ,\\
-X_c&=e\hat\beta'=PX(I-Q),\\
-X_d&=\hat\Gamma=(I-P)X(I-Q).
-\end{align}
-Also
-$$
-\|X-Y\|^2=\|X_0-Y_0\|^2+\|X_r-Y_r\|^2+\|X_c-Y_c\|^2+\|X_d-Y_d\|^2
-$$
-As a consequence, minimizing $\|X-Y\|^2$ over $Y$ while requiring, for example, $Y_c=0$ has the solution $Y=X_0+X_r+X_d$. If we require that
-the row parameters $\alpha$ are ordered we minimize $\|\hat\alpha-\alpha\|^2$
-over $\alpha_1\leq\cdots\leq \alpha_n$, with $\hat\alpha$ the centered row-means. 
-The estimates of $Y_0$, $Y_c$, and $Y_d$ remain the same, because they are independent of the restrictions on $\alpha$. If we require
-that $Y$ is of rank $p<min(n,m)$ we just compute the low-rank
-least squares approximation of the doubly centered matrix $X_d$.
-
-## Kronecker Weighting
-
-The next step is to generalize these results to the inner product $\langle X,Y\rangle=\text{tr}\ RXCY'$ on $\mathbb{R}^{n\times m}$
-with squared norm $\|X\|^2=\text{tr}\ RXCX'$. Suppose $R$ and $C$ are both positive definite. We call this *Kronecker Weighting*.
-
-Now
-\begin{align}
-\langle \alpha e',ee'\rangle&=\text{tr}\ R\alpha e'Cee'=e'Ce\times e'R\alpha ,\\
-\langle \alpha e',e\beta'\rangle&=\text{tr}\ R\alpha e'C\beta e'=e'R\alpha \times e'C\beta,\\
-\langle \alpha e',Y\rangle&=\text{tr}\ R\alpha e'CY'=\alpha 'RYCe.
-\end{align}
-Thus our four orthogonal subspaces are:
-
-1. The subspace $\mathbb{L}_0$ of all constant matrices $\mu ee'$.
-2. The subspace $\mathbb{L}_r$ of all matrices $\alpha e'$ with $\alpha 'Re=0$.
-3. The subspace $\mathbb{L}_c$ of all matrices $e\beta'$ with $\beta'Ce=0$.
-4. The subspace $\mathbb{L}_d$ of all matrices $Y$ with $YCe=0$ and $Y'Re=0$.
-
-We now compute projections in the weighted Kronecker metric on these 
-subspaces. For this we use idempotent, asymmetric rank-one projectors.
-\begin{align}
-P&=\frac{ee'R}{e'Re},\\
-Q&=\frac{Cee'}{e'Ce}
-\end{align}
-and their complements $I-P$ and $I-Q$. 
-Note that $P^2=P$ and $Q^2=Q$ so that $P(I-P)=0$ and $Q(I-Q)=0$.
-
-The solution for the parameters are
-\begin{align}
-\hat\mu&=PXQ,\\
-\hat\alpha&=(I-P)XCe/e'Ce,\\
-\hat\beta'&=e'RX(I-Q)/e'Re,\\
-\hat Y&=(I-P)X(I-Q).
-\end{align}
-so that
-\begin{align}
-\hat\alpha e'&=(I-P)XQ,\\
-e\hat\beta'&=PX(I-Q),
-\end{align}
-and
-\begin{equation}
-X=\hat\mu+\hat\alpha e'+e\hat\beta'+\hat Y
-\end{equation}
-
-If $R$ and/or $C$ is singular we have to be careful. As long as 
-$Ce\neq 0$ and $Re\neq 0$ there is no problem. If $Ce=0$ then
-the components $\mu ee'$ and $\alpha e'$ drop out of the problem
-and we have the decomposition $X=e\beta'+Y$. Since
-$$
-\langle  eb',Y\rangle=\text{tr}\ Reb'CY'=b'CY'Re
-$$
-for orthogonality $Y$ must satisfy $CY'Re=0$.
-
-
-
-The results in this section, and those in the special case discussed in the previous section, can be extended to higher-dimensional arrays.
-
-## Precision Weights
-
-There are inner products on matrix space for which the previous
-decomposition results are not all true. Consider, for example, the inner product 
-\begin{equation}
-\langle X,Y\rangle=\sum_{i=1}^n\sum_{j=1}^m w_{ij}x_{ij}y_{ij}
-\end{equation}
-We call this weighting scheme *precision weights*. The corresponding 
-squared distance is of course
-\begin{equation}
-\|X-Y\|^2=\sum_{i=1}^n\sum_{j=1}^m w_{ij}(x_{ij}-y_{ij})^2
-\end{equation}
-For this inner product 
-\begin{align}
-<\alpha e',ee'>&=\sum_{i=1}^n\alpha_i\sum_{j=1}^m w_{ij},\\
-<\alpha e',e\beta'>&=\sum_{i=1}^n\sum_{j=1}^m w_{ij}\alpha_i\beta_j
-\end{align}
-The inner product of $\alpha e'$ and $e\beta'$ is zero for arbitrary $\alpha$ and $\beta$
-if and only if the weights is zero, which is not a very interesting situation.
-The projection $P$ of $X$ on $\alpha e'$ is $x_re'$, with $x_r$ the vector of weighted row means in deviations from the total mean. Symmetrically $Q$ is $ex_c'$, using the weighted column means.
-
-Trivially it is always true that
-$$
-X=PXQ+(I-P)XQ+PX(I-Q)+(I-P)X(I-Q)
-$$
-For this $P$ and $Q$ do not even have to be projectors. 
-
-What we can do: project on $\alpha_i+\beta_j$ and define $\gamma_{ij}$
-as the residual.
-
-$$
-\sum_{i=1}^n\sum_{j=1}^m w_{ij}(x_{ij}-(\alpha_i+\beta_j))^2=\\S-2\sum_{i=1}^n\alpha_i\sum_{j=1}^mw_{ij}x_{ij}-2\sum_{j=1}^m\beta_j\sum_{i=1}^nw_{ij}x_{ij}+\\\sum_{i=1}^n\alpha_i^2\sum_{j=1}^mw_{ij}+\sum_{j=1}^m\beta_j^2\sum_{i=1}^nw_{ij}+2\sum_{i=1}^n\sum_{j=1}^mw_{ij}\alpha_i\beta_j
-$$
-$$
-\begin{bmatrix}
-W_r&W\\
-W'&W_c
-\end{bmatrix}
-\begin{bmatrix}
-\alpha\\
-\beta
-\end{bmatrix}
-=
-\begin{bmatrix}
-(W*X)_r\\
-(W*X)_c
-\end{bmatrix}
-$$
-Suppose $(e_n,-e_m)$ is the only vector in the null space. Then
-compute the inverse of 
-$$
-\begin{bmatrix}
-W_r+(n+m)^{-1}e_ne_n'&W-(n+m)^{-1}e_ne_m'\\
-W'-(n+m)^{-1}e_me_n'&W_c+(n+m)^{-1}e_me_m'
-\end{bmatrix}^{-1}-\begin{bmatrix}
-(n+m)^{-1}e_ne_n'&-(n+m)^{-1}e_ne_m'\\
--(n+m)^{-1}e_me_n'&(n+m)^{-1}e_me_m'
-\end{bmatrix}
-$$
-
-# Majorization
+We employ two nested majorizations. In the first majorization
+we get rid of the Kronecker weighting and reduce each MM iteration to a
+weighted least squares problem that is separable. The second majorization is used to make
+a further reduction of this precision weighted least squares problem
+to a sequence of unweighted least squares problems.
 
 ::: {#thm-major}
 Suppose $X$ is $n\times m$ and $R$ and $C$ are positive semi-definite of orders $n$ and $m$. Define 
 $$
 \sigma(X):=\text{tr}\ RXCX'.
 $$
-Suppose $\tilde X$ is any other $n\times m$ matrix. Define
-$\tilde G:=R\tilde XC$ and $\tilde V:=\tilde X-\tilde G$. Then
+Suppose $\tilde X$ is any other $n\times m$ matrix. Choose a $\lambda$ larger than or equal to the largest eigenvalue of the Kronecker product $R\otimes C$. Define
+$\tilde G:=\lambda^{-1}R\tilde XC$ and $\tilde V:=\tilde X-\tilde G$. Then
 $$
 \sigma(X)\leq\sigma(\tilde X)+\lambda\|X-\tilde V\|^2-\lambda^{-1}\|\tilde G\|^2
 $$
-where $\lambda$ is larger than or equal to the largest eigenvalue of $R\otimes C$ (the product of the largest eigenvalues of $R$ and $C$).
 :::
 
 ::: {.proof}
-If $x:=\text{vec}(X)$ then, using the Kronecker Product, $\sigma(X)=x'(C\otimes R)x$. Write
-$x=\tilde x+(x-\tilde x)$. Then
+Write
+$X=\tilde X+(X-\tilde X)$. Then
+\begin{equation}
+\sigma(X)=\sigma(\tilde X)+2\text{tr}\ R(X-\tilde X)C\tilde X'+\text{tr}\ R(X-\tilde X)C(X-\tilde X)'.
+\end{equation}
+Now, using $x:=\text{vec}(X)$ and $\tilde x:=\text{vec}(\tilde X)$,
 \begin{multline}
-\sigma(x)=\sigma(\tilde x)+2(x-\tilde x)'(C\otimes R)\tilde x+(x-\tilde x)'(C\otimes R)(x-\tilde x)'\leq\\\sigma(\tilde x)+2(x-\tilde x)'(C\otimes R)\tilde x+\lambda(x-\tilde x)'(x-\tilde x).
+\text{tr}\ R(X-\tilde X)C(X-\tilde X)'=(x-\tilde x)'C\otimes R(x-\tilde x)\leq\\\lambda(x-\tilde x)'C\otimes R(x-\tilde x)=\lambda\text{tr}\ (X-\tilde X)(X-\tilde X)',
 \end{multline}
-Completing the square, rearranging terms, and using $\text{vec}(R\tilde XC)=(C\otimes R)\tilde x$ gives the
-required result.
+and thus
+\begin{multline}
+\sigma(X)\leq\sigma(\tilde X)+2\text{tr}\ (X-\tilde X)'\tilde G+\lambda\text{tr}\ (X-\tilde X)'(X-\tilde X)=\\\sigma(\tilde X)+\lambda\{2\text{tr}\ (X-\tilde X)'\lambda^{-1}\tilde G+\text{tr}\ (X-\tilde X)'(X-\tilde X)\}=\\
+\sigma(\tilde X)+\lambda\|X-\tilde V\|^2-\lambda^{-1}\|\tilde G\|^2
+\end{multline}
 :::
 
-```{r echo = FALSE}
-set.seed(12345)
-r <- crossprod(matrix(rnorm(400), 100, 4))/100
-c <- crossprod(matrix(rnorm(300), 100, 3))/100
-re <- eigen(r)
-ce <- eigen(c)
-rh <- tcrossprod(re$vectors %*% diag(sqrt(re$values)), re$vectors)
-ch <- tcrossprod(ce$vectors %*% diag(sqrt(ce$values)), ce$vectors)
-kr <- kronecker(c, r)
-xmat <- matrix(rnorm(12), 4, 3)
-x <- as.vector(xmat)
-krx <- matrix(kr %*% x, 4, 3)
-l1 <- sum(x * (kr %*% x))
-l2 <- sum((rh %*% xmat %*% ch)^2)
-```
-Now suppose $X=W\star(Y-Z)$ and $\tilde X=W\star(Y-\tilde Z)$, with a parametrization of $Z$
-similar to that in WALS (@deleeuw_graffelman_E_22e). Thus
+Now suppose $X=W\circ(Y-Z)$ and $\tilde X=W\circ(Y-\tilde Z)$. 
+Then
 \begin{equation}
-z_{ij}=\mu+r_i+c_j+\sum_{s=1}^pa_{is}b_{js}.
+\tilde v_{ij}=w_{ij}(y_{ij}-\tilde z_{ij})-\tilde g_{ij},
 \end{equation}
-For majorization to work it is necessary that $\tilde Z$ is of the same form.
-Using the majorization in @thm-major means that in each step we have to minimize (or at
-least decrease) the weighted sum
+and thus
 \begin{equation}
-\sum_{i=1}^n\sum_{j=1}^mw_{ij}^2((y_{ij}-z_{ij})-\tilde v_{ij}/w_{ij})^2=\sum_{i=1}^n\sum_{j=1}^m w_{ij}^2(\tilde y_{ij}-z_{ij})^2
+x_{ij}-\tilde v_{ij}=-w_{ij}(z_{ij}-\tilde z_{ij})+\tilde g_{ij}=
+-w_{ij}(z_{ij}-(\tilde z_{ij}-w_{ij}^{-1}\tilde g_{ij})),
 \end{equation}
-with
+and in the majorization step we must minimize
 \begin{equation}
-\tilde y_{ij}:=y_{ij}-\frac{\tilde v_{ij}}{w_{ij}}.
+\sum_{i=1}^n\sum_{j=1}^mw_{ij}^2(z_{ij}-(\tilde z_{ij}-w_{ij}^{-1}\tilde g_{ij}))^2
 \end{equation}
-over $Z$, and we know how to do this.
+over $z$. This can be done with the wAddPCA() function from the Correlplot package (@graffelman_deleeuw_M_26).
 
 \sectionbreak
 
