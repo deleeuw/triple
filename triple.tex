@@ -365,9 +365,9 @@ Then, for all \(x\) and \(\tilde x\) substitute
 
 A majorization (MM) step minimizes \(\|x-\tilde y\|^2\) over the \(x\)
 satisfying the constraints. If we now \emph{matricize} (the inverse of
-vectorize) we see that we have to minimize \(\|X-\tilde Y\|^2\), over
-\(\mathbb{X}\) with \begin{equation}
-\tilde Y:\tilde X+\lambda^{-1}W\circ(R(Y-\tilde X)C)\circ W.
+vectorize) it follows that we have to minimize \(\|X-\tilde Y\|^2\),
+over \(\mathbb{X}\) with \begin{equation}
+\tilde Y:=\tilde X+\lambda^{-1}W\circ\{R(W\circ(Y-\tilde X))C\}.
 \end{equation} Note that this expression for \(\tilde Y\) does not use
 the (possibly very large) Kronecker product \(H\). If computing the
 largest eigenvalue \(\lambda_{\text{max}}(H)\) (which only has to be
@@ -406,9 +406,9 @@ z'Hz\leq\lambda_{\text{max}}(C\otimes R)z'W_D^2z=\lambda_{\text{max}}(C)\lambda_
 \end{align}
 
 \begin{equation}
-\tilde y:=\tilde x+\lambda^{-1}W_D^{-2}H(y-\tilde x)
+\tilde y:=\tilde x+\lambda^{-1}W_D^{-2}H(y-\tilde x),
 \end{equation} which can be matricized to \begin{equation}
-\tilde Y:=\tilde X+\lambda^{-1}W^{-1}\circ R(W\circ(Y-\tilde X))C
+\tilde Y:=\tilde X+\lambda^{-1}W^{-1}\circ\{R(W\circ(Y-\tilde X))C\}.
 \end{equation}
 
 \subsubsection{Second majorization}\label{second-majorization}
