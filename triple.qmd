@@ -42,9 +42,15 @@ mainfont: Times New Roman
 abstract: TBD
 ---
 
-```{r loadpackages, echo = FALSE}
+```{r load_packages, echo = FALSE}
 suppressPackageStartupMessages(library(knitr, quietly = TRUE))
 suppressPackageStartupMessages(library(tinytex, quietly = TRUE))
+```
+
+```{r load_sources, echo = FALSE}
+source("triple.R")
+source("nested.R")
+source("checker.R")
 ```
 
 \sectionbreak 
@@ -173,6 +179,17 @@ $$
 \tilde{\tilde y}_{ij}=\tilde x_{ij}+\frac{w_{ij}^2}{w^2_{\text{max}}}(\tilde y_{ij}-\tilde x_{ij})
 $$
 
+\sectionbreak
+
+# Software
+
+The github repository at <https://github.com/deleeuw/triple> has the file triple.R, which constains the function triple(), for simple majorization, and the file nested.R for the R program nested(), for nested majorization. Arguments are
+```{r args_triple}
+args(triple)
+```
+```{r args_nested}
+args(nested)
+```
 \sectionbreak
 
 # References

@@ -1,17 +1,14 @@
 
 library(RSpectra)
 
-
-
-
 triple <- function(ymat,
                    wmat = array(1, dim(ymat)),
                    rmat = diag(nrow(ymat)),
                    cmat = diag(ncol(ymat)),
+                   func = eckart_young,
                    p = 2,
                    xini = NULL,
-                   itmax = 100,
-                   inmax = 1,
+                   itmax = 100000,
                    eps = 1e-6,
                    verbose = TRUE) {
   nr <- nrow(ymat)
@@ -20,7 +17,7 @@ triple <- function(ymat,
   hmat <- kronecker(cmat, rmat) * outer(wvec, wvec)
   labd <- eigs_sym(hmat, 1)$values
   if (is.null(xini)) {
-    xold <- eckart_young(ymat, p)
+    xold <- func(ymat, p)
   } else {
     xold <- xini
   }
@@ -29,8 +26,8 @@ triple <- function(ymat,
   itel <- 1
   repeat {
     gold <- (wmat ^ 2) * (rmat %*% (ymat - xold) %*% cmat) 
-    ynew <- xold + 2 * gold / labd
-    xnew <- eckart_young(ynew, p)
+    ynew <- xold + gold / labd
+    xnew <- func(ynew, p)
     rnew <- wmat * (ymat - xnew)
     snew <- loss(rnew, rmat, cmat)
     epsi <- max(abs(xold - xnew))
