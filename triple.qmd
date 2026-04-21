@@ -120,15 +120,38 @@ Kronecker product $H$. If computing the largest eigenvalue $\lambda_{\text{max}}
 
 ## Nested Majorization
 
-We employ two nested majorizations. In the first majorization
+There is a more radical way to avoid computing the largest eigenvalue of
+$H$. We employ two nested majorizations. In the first majorization
 we get rid of the Kronecker weighting and reduce each MM iteration to a
-weighted least squares problem that is separable. The second majorization is used to make
-a further reduction of this precision weighted least squares problem
+weighted least squares problem that is separable, i.e. has a diagonal weight matrix. 
+The second majorization is used to make
+a further reduction of this separable weighted least squares problem
 to a sequence of unweighted least squares problems. The majorizations are nested, 
 in the sense that we need one or more iterations of the second majorization process
 within each iteration of the first majorization process.
 
 ### First Majorization
+
+Start with the same vectorization we used before in our simple majorization But instead of
+majorizing by using $z'Hz\leq\lambda_{\text{max}}(H)z'z$ we use
+\begin{equation}
+z'Hz\leq\lambda_{\text{max}}(C\otimes R)z'W_D^2z=\lambda_{\text{max}}(C)\lambda_{\text{max}}(R)z'W_D^2z.
+\end{equation}
+Let $\lambda:=\lambda_{\text{max}}(C)\lambda_{\text{max}}(R)$. We now have
+\begin{align}
+\sigma(x)&=((y-\tilde x)-(x-\tilde x))'H((y-\tilde x)-(x-\tilde x))\notag\\
+&=\sigma(\tilde x)-2(x-\tilde x)'H(y-\tilde x)+(x-\tilde x)'H(x-\tilde x)\notag\\
+&\leq\sigma(\tilde x)-2(x-\tilde x)'H(y-\tilde x)+\lambda(x-\tilde x)'W_D^2(x-\tilde x)\notag\\
+&=\sigma(\tilde x)+\lambda(x-\tilde y)'W_D^2(x-\tilde y)+\lambda^{-1}(y-\tilde x)'HW_D^{-2}H(y-\tilde x)
+\end{align}
+
+\begin{equation}
+\tilde y:=\tilde x+\lambda^{-1}W_D^{-2}H(y-\tilde x)
+\end{equation}
+which can be matricized to
+\begin{equation}
+\tilde Y:=\tilde X+\lambda^{-1}W^{-1}\circ R(W\circ(Y-\tilde X))C
+\end{equation}
 
 
 ### Second majorization
