@@ -13,15 +13,9 @@ yvec <- as.vector(ymat)
 wvec <- as.vector(wmat)
 wdig <- diag(wvec)
 
-print(matrix(rckr %*% yvec, 4, 3))
-print(rmat %*% ymat %*% cmat)
-
-print(matrix((rckr %*% (wvec * yvec)) / wvec, 4, 3))
-print((rmat %*% (wmat * ymat) %*% cmat) / wmat)
-
 checker <- function(x, y, rmat, cmat, wmat) {
-  sx <- loss(x, rmat, cmat, wmat)
-  so <- loss(y, rmat, cmat, wmat)
+  sx <- loss(x, rmat, cmat)
+  so <- loss(y, rmat, cmat)
   lb <- eigs_sym(rmat, 1)$values * eigs_sym(cmat, 1)$values
   go <- rmat %*% y %*% cmat
   vo <- y - go/lb
@@ -40,29 +34,31 @@ triple <- function(ymat,
                    rmat = diag(nrow(ymat)),
                    cmat = diag(ncol(ymat)),
                    p = 2,
-                   zini = NULL,
+                   xini = NULL,
                    itmax = 100,
                    inmax = 1,
                    eps = 1e-6,
                    verbose = TRUE) {
   nr <- nrow(ymat)
   nc <- ncol(ymat)
-  labd <- eigs_sym(rmat, 1)$values * eigs_sym(cmat, 1)$values
-  if (is.null(zini)) {
-    zold <- eckart_young(ymat, p)
+  wvec <- as.vector(wmat) 
+  hmat <- kronecker(cmat, rmat) * outer(wvec, wvec)
+  labd <- eigs_sym(hmat, 1)$values
+  if (is.null(xini)) {
+    xold <- eckart_young(ymat, p)
   } else {
-    zold <- zinit
+    xold <- xini
   }
-  rold <- wmat * (ymat - zold)
+  rold <- wmat * (ymat - xold)
   sold <- loss(rold, rmat, cmat)
   itel <- 1
   repeat {
-    gold <- rmat %*% zold %*% cmat
-    ynew <- zold - (gold / wmat) / labd
-    znew <- eckart_young(ynew, p)
-    rnew <- wmat * (ymat - znew)
+    gold <- (wmat ^ 2) * (rmat %*% (ymat - xold) %*% cmat) 
+    ynew <- xold + 2 * gold / labd
+    xnew <- eckart_young(ynew, p)
+    rnew <- wmat * (ymat - xnew)
     snew <- loss(rnew, rmat, cmat)
-    epsi <- max(abs(zold - znew))
+    epsi <- max(abs(xold - xnew))
     if (verbose) {
       cat("itel", formatC(itel, digits = 3, format = "d"),
           "sold", formatC(sold, digits = 10, width = 15, format = "f"),
@@ -74,7 +70,7 @@ triple <- function(ymat,
       break
     }
     itel <- itel + 1
-    zold <- znew
+    xold <- xnew
     sold <- snew
   }
 }
