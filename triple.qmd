@@ -60,80 +60,79 @@ appreciated, but is not required. The files can be found at
 # Introduction
 
 The problem addressed in this note is to approximate a given $n\times m$ matrix $Y$
-by a $n\times m$ matrix $Z$ which must be in a given subset $\mathbb{Z}$ of
-$\mathbb{R}^{n\times m}$. For example, $\mathbb{Z}$ can be the $n\times m$
+by a $n\times m$ matrix $X$ which must be in a given subset $\mathbb{X}$ of
+$\mathbb{R}^{n\times m}$. For example, $\mathbb{X}$ can be the $n\times m$
 matrices of rank less than or equal to $p$, or a set of special matrices, such as
-Hankel or Cauchy matrices.
+the Hankel or Cauchy matrices.
 
-We measure loss using
+We measure loss using a loss function proposed in @graffelman_26.
 \begin{equation}
-\sigma(Z):=\text{tr}\ R(W\circ(Y-Z))C(W\circ(Y-Z))'.\label{eq-loss}
+\sigma(X):=\text{tr}\ R(W\circ(Y-X))C(W\circ(Y-X))'.\label{eq-loss}
 \end{equation}
-In Definition \eqref{eq-loss} $R$ and $C$ are given positive sem-definite matrices of orders $n$ and $m$, which define the *Kronecker weights*. The Kronecker weights can be, for example, inverse
-covariance matrices for row and column entries, as in the matrix variate normal distribution
-(@gupta_nagar_00). The $n\times m$ matrix $W$ of *precision weights* has positive entries, which can be, for example, inverse standard errors of the corresponding entries of $Y$. The symbol $\circ$ is used for Hadamard (elementwise) multiplication.
+In Definition \eqref{eq-loss} $R$ and $C$ are given positive semi-definite matrices of orders $n$ and $m$, which define the *Kronecker weights*. The Kronecker weights can be, for example, inverse covariance matrices for row and column entries, as in the matrix variate normal distribution (@gupta_nagar_00). The $n\times m$ matrix $W$ of *precision weights* has positive entries, which can be, for example, inverse standard errors of the corresponding entries of $Y$. The symbol $\circ$ is used for Hadamard (elementwise) multiplication.
 
 \sectionbreak
 
-# Algorithm
+# Algorithms
 
-Our algorithm uses majorization (or MM). See @lange_16 for comprehensive discussion of MM.
+Our algorithms use majorization. See @lange_16 or @deleeuw_B_21c for comprehensive discussions of majorization (or MM).
 Majorization is used to reduce the weighted least squares problem to an unweighted
 least squares problem, which is generally much easier to solve. Similar applications 
 of MM are in @kiers_97 and in @groenen_giaquinto_kiers_03. 
+
+## Simple Majorization
+
+We first *vectorize* the problem. This means replacing the definition \eqref{eq-loss}
+that uses matrices by an equivalent definition in terms of vectors, which is easier to work with. Define
+$x:=\text{vec}(X)$ and $y:=\text{vec}(X)$. Loss becomes
+\begin{equation}
+\sigma(x):=(y-x)'W_D(C\otimes R)W_D(y-x).\label{eq-lossv}
+\end{equation}
+In \eqref{eq-lossv} matrix $W_D$ is the diagonal matrix with the
+elements of $\text{vec}(W)$ on the diagonal.
+
+Suppose $\lambda$ is any number larger than or equal to the largest
+eigenvalue $\lambda_{\text{max}}(H)$ of $H:=W_D(C\otimes R)W_D$. Then, for all $x$ and $\tilde x$ substitute $x=\tilde x+(x-\tilde x)$ in \eqref{eq-lossv}. This gives
+\begin{align}
+\sigma(x)&=((y-\tilde x)-(x-\tilde x))'H((y-\tilde x)-(x-\tilde x))\notag\\
+&=\sigma(\tilde x)-2(x-\tilde x)'H(y-\tilde x)+(x-\tilde x)'H(x-\tilde x)\notag\\
+&\leq\sigma(\tilde x)-2(x-\tilde x)'H(y-\tilde x)+\lambda\|x-\tilde x\|^2\notag\\
+&=\sigma(\tilde x)+\lambda\|x-\tilde y\|^2-\lambda^{-1}\|H(y-\tilde x)\|^2,
+\end{align}
+with 
+\begin{equation}
+\tilde y:=\tilde x+\lambda^{-1}H(y-\tilde x).
+\end{equation}
+
+A majorization (MM) step minimizes $\|x-\tilde y\|^2$ over the $x$ satisfying the
+constraints. If we now *matricize* (the inverse of vectorize) we see that we have to minimize $\|X-\tilde Y\|^2$,
+over $\mathbb{X}$ with
+\begin{equation}
+\tilde Y:\tilde X+\lambda^{-1}W\circ(R(Y-\tilde X)C)\circ W.
+\end{equation}
+Note that this expression for $\tilde Y$ does not use the (possibly very large)
+Kronecker product $H$. If computing the largest eigenvalue $\lambda_{\text{max}}(H)$ (which only has to be done once before the iterations start) is a problem then we can use an upper bound.
+\begin{multline}
+\max_z\frac{z'W_D(C\otimes R)W_Dz}{z'z}=\max_z\frac{z'W_D(C\otimes R)W_Dz}{z'W_D^2z}\frac{z'W_D^2z}{z'z}\\
+\leq\max_z\frac{z'W_D(C\otimes R)W_Dz}{z'W_D^2z}\max_z\frac{z'W_D^2z}{z'z}
+=\lambda_{\text{max}}(C)\lambda_{\text{max}}(R)\max(W\circ W)
+\end{multline}
+
+## Nested Majorization
 
 We employ two nested majorizations. In the first majorization
 we get rid of the Kronecker weighting and reduce each MM iteration to a
 weighted least squares problem that is separable. The second majorization is used to make
 a further reduction of this precision weighted least squares problem
-to a sequence of unweighted least squares problems.
+to a sequence of unweighted least squares problems. The majorizations are nested, 
+in the sense that we need one or more iterations of the second majorization process
+within each iteration of the first majorization process.
 
-::: {#thm-major}
-Suppose $X$ is $n\times m$ and $R$ and $C$ are positive semi-definite of orders $n$ and $m$. Define 
-$$
-\sigma(X):=\text{tr}\ RXCX'.
-$$
-Suppose $\tilde X$ is any other $n\times m$ matrix. Choose a $\lambda$ larger than or equal to the largest eigenvalue of the Kronecker product $R\otimes C$. Define
-$\tilde G:=\lambda^{-1}R\tilde XC$ and $\tilde V:=\tilde X-\tilde G$. Then
-$$
-\sigma(X)\leq\sigma(\tilde X)+\lambda\|X-\tilde V\|^2-\lambda^{-1}\|\tilde G\|^2
-$$
-:::
+### First Majorization
 
-::: {.proof}
-Write
-$X=\tilde X+(X-\tilde X)$. Then
-\begin{equation}
-\sigma(X)=\sigma(\tilde X)+2\text{tr}\ R(X-\tilde X)C\tilde X'+\text{tr}\ R(X-\tilde X)C(X-\tilde X)'.
-\end{equation}
-Now, using $x:=\text{vec}(X)$ and $\tilde x:=\text{vec}(\tilde X)$,
-\begin{multline}
-\text{tr}\ R(X-\tilde X)C(X-\tilde X)'=(x-\tilde x)'C\otimes R(x-\tilde x)\leq\\\lambda(x-\tilde x)'C\otimes R(x-\tilde x)=\lambda\text{tr}\ (X-\tilde X)(X-\tilde X)',
-\end{multline}
-and thus
-\begin{multline}
-\sigma(X)\leq\sigma(\tilde X)+2\text{tr}\ (X-\tilde X)'\tilde G+\lambda\text{tr}\ (X-\tilde X)'(X-\tilde X)=\\\sigma(\tilde X)+\lambda\{2\text{tr}\ (X-\tilde X)'\lambda^{-1}\tilde G+\text{tr}\ (X-\tilde X)'(X-\tilde X)\}=\\
-\sigma(\tilde X)+\lambda\|X-\tilde V\|^2-\lambda^{-1}\|\tilde G\|^2
-\end{multline}
-:::
 
-Now suppose $X=W\circ(Y-Z)$ and $\tilde X=W\circ(Y-\tilde Z)$. 
-Then
-\begin{equation}
-\tilde v_{ij}=w_{ij}(y_{ij}-\tilde z_{ij})-\tilde g_{ij},
-\end{equation}
-and thus
-\begin{equation}
-x_{ij}-\tilde v_{ij}=-w_{ij}(z_{ij}-\tilde z_{ij})+\tilde g_{ij}=
--w_{ij}(z_{ij}-(\tilde z_{ij}-w_{ij}^{-1}\tilde g_{ij})),
-\end{equation}
-and in the majorization step we must minimize
-\begin{equation}
-\sum_{i=1}^n\sum_{j=1}^mw_{ij}^2(z_{ij}-(\tilde z_{ij}-w_{ij}^{-1}\tilde g_{ij}))^2
-\end{equation}
-over $z$. This can be done with the wAddPCA() function from the Correlplot package (@graffelman_deleeuw_M_26).
+### Second majorization
 
 \sectionbreak
-
 
 # References
