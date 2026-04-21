@@ -197,4 +197,68 @@ uses the truncated SVD for low-rank matrix approximation with $p=2$. Note that n
 
 \sectionbreak
 
+# Example
+
+## Data
+
+```{r}
+ymat
+```
+```{r}
+rmat
+```
+```{r}
+cmat
+```
+```{r}
+wmat
+```
+
+## Triple
+
+```{r}
+h <- triple(ymat, rmat = rmat, cmat = cmat, wmat = wmat, verbose = FALSE)
+h$itel
+h$loss
+h$x
+```
+
+## Nested, inmax = 1
+
+```{r}
+h <- nested(ymat, rmat = rmat, cmat = cmat, wmat = wmat, inmax = 1, verbose = FALSE)
+h$itel
+h$loss
+h$x
+```
+
+## Nested, inmax = 5
+
+```{r}
+h <- nested(ymat, rmat = rmat, cmat = cmat, wmat = wmat, inmax = 5, verbose = FALSE)
+h$itel
+h$loss
+h$x
+```
+
+## Nested, inmax = 10
+
+```{r}
+h <- nested(ymat, rmat = rmat, cmat = cmat, wmat = wmat, inmax = 10, verbose = FALSE)
+h$itel
+h$loss
+h$x
+```
+
+## Nested, inmax = 100
+
+```{r}
+h <- nested(ymat, rmat = rmat, cmat = cmat, wmat = wmat, inmax = 100, verbose = FALSE)
+h$itel
+h$loss
+h$x
+```
+
+\sectionbreak
+
 # References

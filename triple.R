@@ -25,7 +25,6 @@ triple <- function(ymat,
   sold <- loss(rold, rmat, cmat)
   itel <- 1
   repeat {
-    # gold <- (wmat ^ 2) * (rmat %*% (ymat - xold) %*% cmat) 
     gold <- wmat * (rmat %*% (wmat * (ymat - xold)) %*% cmat) 
     ynew <- xold + gold / labd
     xnew <- func(ynew, p)
@@ -46,6 +45,7 @@ triple <- function(ymat,
     xold <- xnew
     sold <- snew
   }
+  return(list(x = xnew, loss = snew, itel = itel))
 }
 
 loss <- function(x, rmat, cmat) {

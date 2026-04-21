@@ -8,7 +8,7 @@ nested <- function(ymat,
                    func = eckart_young,
                    p = 2,
                    xini = NULL,
-                   itmax = 10000,
+                   itmax = 100000,
                    inmax = 10,
                    eps = 1e-6,
                    ips = 1e-6,
@@ -59,6 +59,7 @@ nested <- function(ymat,
     xold <- xnew
     sold <- snew
   }
+  return(list(x = xnew, loss = snew, itel = itel))
 }
 
 loss <- function(x, rmat, cmat) {
