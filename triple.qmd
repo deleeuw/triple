@@ -45,6 +45,7 @@ abstract: TBD
 ```{r load_packages, echo = FALSE}
 suppressPackageStartupMessages(library(knitr, quietly = TRUE))
 suppressPackageStartupMessages(library(tinytex, quietly = TRUE))
+suppressPackageStartupMessages(library(microbenchmark, quietly = TRUE))
 ```
 
 ```{r load_sources, echo = FALSE}
@@ -183,13 +184,17 @@ $$
 
 # Software
 
-The github repository at <https://github.com/deleeuw/triple> has the file triple.R, which constains the function triple(), for simple majorization, and the file nested.R for the R program nested(), for nested majorization. Arguments are
+The github repository at <https://github.com/deleeuw/triple> has the file triple.R, which constains the function triple(), for simple majorization, and the file nested.R with the R program nested(), for nested majorization. Arguments are
 ```{r args_triple}
 args(triple)
 ```
 ```{r args_nested}
 args(nested)
 ```
+The arguments are mostly self-explanotory. An exception is perhaps the func parameter.
+which is a separate R routine that performs the unweighted least squares projection on $\mathbb{X}$. Parameter $p$ has additional parameters for func, if needed. Default
+uses the truncated SVD for low-rank matrix approximation with $p=2$. Note that nested() has stopping parameters itmax and eps for the outer iterations and inmax and ips for the inner iterations.
+
 \sectionbreak
 
 # References

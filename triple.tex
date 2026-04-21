@@ -433,7 +433,7 @@ minimizing \[
 
 The github repository at \url{https://github.com/deleeuw/triple} has the
 file triple.R, which constains the function triple(), for simple
-majorization, and the file nested.R for the R program nested(), for
+majorization, and the file nested.R with the R program nested(), for
 nested majorization. Arguments are
 
 \begin{Shaded}
@@ -445,7 +445,7 @@ nested majorization. Arguments are
 \begin{verbatim}
 function (ymat, wmat = array(1, dim(ymat)), rmat = diag(nrow(ymat)), 
     cmat = diag(ncol(ymat)), func = eckart_young, p = 2, xini = NULL, 
-    itmax = 100, inmax = 1, eps = 1e-06, verbose = TRUE) 
+    itmax = 1e+05, eps = 1e-06, verbose = TRUE) 
 NULL
 \end{verbatim}
 
@@ -458,9 +458,17 @@ NULL
 \begin{verbatim}
 function (ymat, wmat = array(1, dim(ymat)), rmat = diag(nrow(ymat)), 
     cmat = diag(ncol(ymat)), func = eckart_young, p = 2, xini = NULL, 
-    itmax = 100, inmax = 1, eps = 1e-06, ips = 1e-06, verbose = TRUE) 
+    itmax = 10000, inmax = 10, eps = 1e-06, ips = 1e-06, verbose = TRUE) 
 NULL
 \end{verbatim}
+
+The arguments are mostly self-explanotory. An exception is perhaps the
+func parameter. which is a separate R routine that performs the
+unweighted least squares projection on \(\mathbb{X}\). Parameter \(p\)
+has additional parameters for func, if needed. Default uses the
+truncated SVD for low-rank matrix approximation with \(p=2\). Note that
+nested() has stopping parameters itmax and eps for the outer iterations
+and inmax and ips for the inner iterations.
 
 \sectionbreak
 
