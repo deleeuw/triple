@@ -413,19 +413,22 @@ z'Hz\leq\lambda_{\text{max}}(C\otimes R)z'W_D^2z=\lambda_{\text{max}}(C)\lambda_
 
 \subsubsection{Second majorization}\label{second-majorization}
 
-In the ``inner'' majorization we need to minimize \[
-\sum_{i=1}^n\sum_{j=1}^nw_{ij}^2(\tilde y_{ij}-x_{ij})^2
-\] over \(X\in\mathbb{X}\). This can be done with the wAddPCA() function
+In the ``inner'' majorization we need to minimize \begin{equation}
+\sum_{i=1}^n\sum_{j=1}^nw_{ij}^2(\tilde y_{ij}-x_{ij})^2\label{eq-inloss}
+\end{equation} over \(X\in\mathbb{X}\). Note that in the inner
+iterations the ``target'' \(\tilde Y\) is the same in each iteration,
+because it only changes in the outer iterations. Minimizing (or
+decreasing) \eqref{eq-inloss} can be done with the wAddPCA() function
 from the Correlplot package (Graffelman and De Leeuw
 (\citeproc{ref-graffelman_deleeuw_M_26}{2026})).
 
-The majorization in this case is simple. The same quadratic majorization
-reasoning as in the previous sections leads to the unweighted problem of
-minimizing \[
-\sum_{i=1}^n\sum_{j=1}^n(\tilde{\tilde y}_{ij}-x_{ij})^2
-\] with \[
-\tilde{\tilde y}_{ij}=\tilde x_{ij}+\frac{w_{ij}^2}{w^2_{\text{max}}}(\tilde y_{ij}-\tilde x_{ij})
-\]
+The majorization for the inner iterations is simple. The same quadratic
+majorization reasoning as in the previous sections leads to the
+unweighted problem of minimizing \begin{equation}
+\sum_{i=1}^n\sum_{j=1}^n(\tilde{\tilde y}_{ij}-x_{ij})^2,
+\end{equation} with \begin{equation}
+\tilde{\tilde y}_{ij}:=\tilde x_{ij}+\frac{w_{ij}^2}{w^2_{\text{max}}}(\tilde y_{ij}-\tilde x_{ij}).
+\end{equation}
 
 \sectionbreak
 
