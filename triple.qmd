@@ -156,6 +156,23 @@ which can be matricized to
 
 ### Second majorization
 
+In the "inner" majorization we need to minimize
+$$
+\sum_{i=1}^n\sum_{j=1}^nw_{ij}^2(\tilde y_{ij}-x_{ij})^2
+$$
+over $X\in\mathbb{X}$. This can be done with the wAddPCA() function from the
+Correlplot package (@graffelman_deleeuw_M_26).
+
+The majorization in this case is simple. The same quadratic majorization reasoning
+as in the previous sections leads to the unweighted problem of minimizing
+$$
+\sum_{i=1}^n\sum_{j=1}^n(\tilde{\tilde y}_{ij}-x_{ij})^2
+$$
+with
+$$
+\tilde{\tilde y}_{ij}=\tilde x_{ij}+\frac{w_{ij}^2}{w^2_{\text{max}}}(\tilde y_{ij}-\tilde x_{ij})
+$$
+
 \sectionbreak
 
 # References

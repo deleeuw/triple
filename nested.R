@@ -4,7 +4,7 @@ library(RSpectra)
 
 
 
-triple <- function(ymat,
+nested <- function(ymat,
                    wmat = array(1, dim(ymat)),
                    rmat = diag(nrow(ymat)),
                    cmat = diag(ncol(ymat)),
@@ -16,9 +16,7 @@ triple <- function(ymat,
                    verbose = TRUE) {
   nr <- nrow(ymat)
   nc <- ncol(ymat)
-  wvec <- as.vector(wmat) 
-  hmat <- kronecker(cmat, rmat) * outer(wvec, wvec)
-  labd <- eigs_sym(hmat, 1)$values
+  labd <- eigs_sym(kronecker(cmat, rmat), 1)$values
   if (is.null(xini)) {
     xold <- eckart_young(ymat, p)
   } else {
@@ -28,8 +26,8 @@ triple <- function(ymat,
   sold <- loss(rold, rmat, cmat)
   itel <- 1
   repeat {
-    gold <- (wmat ^ 2) * (rmat %*% (ymat - xold) %*% cmat) 
-    ynew <- xold + 2 * gold / labd
+    gold <- (rmat %*% (wmat * (ymat - xold)) %*% cmat) / wmat
+    ynew <- xold + gold / labd
     xnew <- eckart_young(ynew, p)
     rnew <- wmat * (ymat - xnew)
     snew <- loss(rnew, rmat, cmat)
