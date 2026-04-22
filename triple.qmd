@@ -167,7 +167,6 @@ which can be matricized to
 \tilde Y:=\tilde X+\lambda^{-1}W^{-1}\circ\{R(W\circ(Y-\tilde X))C\}.
 \end{equation}
 
-
 ### Second majorization
 
 In the "inner" majorization we need to minimize

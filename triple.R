@@ -1,6 +1,8 @@
 
 library(RSpectra)
 
+source("auxiliary.R")
+
 triple <- function(ymat,
                    wmat = array(1, dim(ymat)),
                    rmat = diag(nrow(ymat)),
@@ -57,5 +59,16 @@ eckart_young <- function(x, p) {
   return(tcrossprod(h$u, h$v %*% diag(h$d[1:p])))
 }
 
+column_adjust <- function(x, p) {
+  x <- t(apply(x, 1, function(z) z - mean(z)))
+  h <- svd(x, nu = p, nv = p)
+  return(tcrossprod(h$u, h$v %*% diag(h$d[1:p])))
+}
+
+row_adjust <- function(x, p) {
+  x <- apply(x, 2, function(z) z - mean(z))
+  h <- svd(x, nu = p, nv = p)
+  return(tcrossprod(h$u, h$v %*% diag(h$d[1:p])))
+}
 
 
