@@ -72,11 +72,18 @@ $\mathbb{R}^{n\times m}$. For example, $\mathbb{X}$ can be the $n\times m$
 matrices of rank less than or equal to $p$, or a set of special matrices, such as
 the Hankel or Cauchy matrices.
 
-We measure loss using a loss function proposed in @graffelman_26.
+We measure loss using a loss function proposed in @graffelman_26a.
 \begin{equation}
 \sigma(X):=\text{tr}\ R(W\circ(Y-X))C(W\circ(Y-X))'.\label{eq-loss}
 \end{equation}
 In Definition \eqref{eq-loss} $R$ and $C$ are given positive semi-definite matrices of orders $n$ and $m$, which define the *Kronecker weights*. The Kronecker weights can be, for example, inverse covariance matrices for row and column entries, as in the matrix variate normal distribution (@gupta_nagar_00). The $n\times m$ matrix $W$ of *precision weights* has positive entries, which can be, for example, inverse standard errors of the corresponding entries of $Y$. The symbol $\circ$ is used for Hadamard (elementwise) multiplication.
+
+Loss function \eqref{eq-loss} has many well-known special cases. If all weights
+are equal to one then we recover correspondence analysis, redundancy analysis,
+and various other forms of canonical analysis, as well as 
+forms of principal component analysis with Kronecker weights (@deleeuw_A_84b, @deleeuw_kukuyeva_U_09, @graffelman_26a, @graffelman_26b). 
+If both $R$ and $C$ are equal to the identity we have principal components analysis with precision weights, as in @gabriel_zamir_79. If $Y$ is symmetric the various approximations of the correlation matrix discussed in @graffelman_deleeuw_A_23 are special cases.
+
 
 \sectionbreak
 
@@ -192,12 +199,14 @@ args(triple)
 args(nested)
 ```
 The arguments are mostly self-explanotory. An exception is perhaps the func parameter.
-which is a separate R routine that performs the unweighted least squares projection on $\mathbb{X}$. Parameter $p$ has additional parameters for func, if needed. Default
-uses the truncated SVD for low-rank matrix approximation with $p=2$. Note that nested() has stopping parameters itmax and eps for the outer iterations and inmax and ips for the inner iterations.
+which is a separate R routine that performs the unweighted least squares projection on $\mathbb{X}$. Parameter $p$ has additional parameters for func, if needed. The default
+uses the truncated SVD for low-rank matrix approximation with $p=2$. The initial estimate is the unweighted projection of the data matrix, without taking any of the weight matrices into account. Note that nested() has stopping parameters itmax and eps for the outer iterations and inmax and ips for the inner iterations.
 
 \sectionbreak
 
 # Example
+
+We analyze a small artifical example, generated from random data.
 
 ## Data
 
