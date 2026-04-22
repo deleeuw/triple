@@ -452,7 +452,11 @@ unweighted problem of minimizing \begin{equation}
 The github repository at \url{https://github.com/deleeuw/triple} has the
 file triple.R, which constains the function triple(), for simple
 majorization, and the file nested.R with the R program nested(), for
-nested majorization. Arguments are
+nested majorization.
+
+\subsection{Arguments}\label{arguments}
+
+Arguments are
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -489,6 +493,39 @@ initial estimate is the unweighted projection of the data matrix,
 without taking any of the weight matrices into account. Note that
 nested() has stopping parameters itmax and eps for the outer iterations
 and inmax and ips for the inner iterations.
+
+\subsection{Values}\label{values}
+
+\subsection{Projection Routines}\label{projection-routines}
+
+The file auxiliary.R has routines for unweighted least squares
+projection in matrix space. This defines possible values for the func
+parameter of triple() and nested().
+
+\begin{itemize}
+\tightlist
+\item
+  eckart\_young() low-rank approximation.
+\item
+  column\_adjust() subtract column means and then eckart\_young.
+\item
+  row\_adjust() subtract row means and then eckart\_young
+\item
+  double\_center() and then eckart\_young.
+\item
+  hankel() finds the best fitting Hankel matrix (square matrices only).
+\item
+  toeplitz() finds the best fitting Toeplitz matrix (square matrices
+  only).
+\item
+  symmetric() finds the best fitting symmetric matrix (square matrices
+  only).
+\item
+  anti\_symmetric() finds the best fitting anti-symmetric matrix (square
+  matrices only).
+\item
+  finds the best fitting additive matrix (i.e.~with \(x_{ij}=a_i+b_j\))
+\end{itemize}
 
 \sectionbreak
 

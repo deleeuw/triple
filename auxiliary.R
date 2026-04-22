@@ -39,7 +39,7 @@ hankel <- function(x, p) {
   return(z)
 }
 
-toeplitz <- function(x, p) {
+toeplitz <- function(x) {
   n <- nrow(x)
   m <- 1:n
   z <- array(0, dim(x))
@@ -50,15 +50,15 @@ toeplitz <- function(x, p) {
   return(z)
 }
 
-symmetric <- function(x, p) {
+symmetric <- function(x) {
   return((x + t(x)) / 2)
 }
 
-anti_symmetric <- function(x, p) {
+anti_symmetric <- function(x) {
   return((x - t(x)) / 2)
 }
 
-additive <- function(x, p) {
+additive <- function(x) {
   rm <- apply(x, 1, mean)
   cm <- apply(x, 2, mean)
   mm <- mean(x)

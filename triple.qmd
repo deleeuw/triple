@@ -190,7 +190,11 @@ with
 
 # Software
 
-The github repository at <https://github.com/deleeuw/triple> has the file triple.R, which constains the function triple(), for simple majorization, and the file nested.R with the R program nested(), for nested majorization. Arguments are
+The github repository at <https://github.com/deleeuw/triple> has the file triple.R, which constains the function triple(), for simple majorization, and the file nested.R with the R program nested(), for nested majorization. 
+
+## Arguments 
+
+Arguments are
 ```{r args_triple}
 args(triple)
 ```
@@ -200,6 +204,25 @@ args(nested)
 The arguments are mostly self-explanotory. An exception is perhaps the func parameter.
 which is a separate R routine that performs the unweighted least squares projection on $\mathbb{X}$. Parameter $p$ has additional parameters for func, if needed. The default
 uses the truncated SVD for low-rank matrix approximation with $p=2$. The initial estimate is the unweighted projection of the data matrix, without taking any of the weight matrices into account. Note that nested() has stopping parameters itmax and eps for the outer iterations and inmax and ips for the inner iterations.
+
+## Values
+
+## Projection Routines
+
+The file auxiliary.R has routines for unweighted least squares
+projection in matrix space. This defines possible values for the
+func parameter of triple() and nested().
+
+* eckart_young() low-rank approximation.
+* column_adjust() subtract column means and then eckart_young.
+* row_adjust() subtract row means and then eckart_young
+* double_center() and then eckart_young.
+* hankel() finds the best fitting Hankel matrix (square matrices only).
+* toeplitz() finds the best fitting Toeplitz matrix (square matrices only).
+* symmetric() finds the best fitting symmetric matrix (square matrices only).
+* anti_symmetric() finds the best fitting anti-symmetric matrix (square matrices only).
+* finds the best fitting additive matrix (i.e. with $x_{ij}=a_i+b_j$)
+
 
 \sectionbreak
 

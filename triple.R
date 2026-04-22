@@ -19,7 +19,11 @@ triple <- function(ymat,
   hmat <- kronecker(cmat, rmat) * outer(wvec, wvec)
   labd <- eigs_sym(hmat, 1)$values
   if (is.null(xini)) {
-    xold <- func(ymat, p)
+    if (length(formals(func)) == 1) {
+      xold <- func(ymat)
+    } else {
+      xold <- func(ymat, p)
+    }
   } else {
     xold <- xini
   }
@@ -29,7 +33,11 @@ triple <- function(ymat,
   repeat {
     gold <- wmat * (rmat %*% (wmat * (ymat - xold)) %*% cmat) 
     ynew <- xold + gold / labd
-    xnew <- func(ynew, p)
+    if (length(formals(func)) == 1) {
+      xnew <- func(ynew)
+    } else {
+      xnew <- func(ynew, p)
+    }
     rnew <- wmat * (ymat - xnew)
     snew <- loss(rnew, rmat, cmat)
     epsi <- max(abs(xold - xnew))

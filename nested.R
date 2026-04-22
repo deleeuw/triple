@@ -20,7 +20,11 @@ nested <- function(ymat,
   labd <- eigs_sym(kronecker(cmat, rmat), 1)$values
   wmax <- max(wmat^2)
   if (is.null(xini)) {
-    xold <- func(ymat, p)
+    if (length(formals(func)) == 1) {
+      xold <- func(ymat)
+    } else {
+      xold <- func(ymat, p)
+    }
   } else {
     xold <- xini
   }
@@ -34,7 +38,11 @@ nested <- function(ymat,
     ntel <- 1
     repeat {
       ydob <- xmid + ((wmat^2) / wmax) * (ymid - xmid)
-      xnew <- func(ydob, p)
+      if (length(formals(func)) == 1) {
+        xnew <- func(ydob)
+      } else {
+        xnew <- func(ydob, p)
+      }
       ipsi <- max(abs(xmid - xnew))
       if ((ntel == inmax) || (ipsi < ips)) {
         break
