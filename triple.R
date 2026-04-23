@@ -58,25 +58,3 @@ triple <- function(ymat,
   return(list(x = xnew, loss = snew, itel = itel))
 }
 
-loss <- function(x, rmat, cmat) {
-  return(sum((rmat %*% x %*% cmat) * x))
-}
-
-eckart_young <- function(x, p) {
-  h <- svd(x, nu = p, nv = p)
-  return(tcrossprod(h$u, h$v %*% diag(h$d[1:p])))
-}
-
-column_adjust <- function(x, p) {
-  x <- t(apply(x, 1, function(z) z - mean(z)))
-  h <- svd(x, nu = p, nv = p)
-  return(tcrossprod(h$u, h$v %*% diag(h$d[1:p])))
-}
-
-row_adjust <- function(x, p) {
-  x <- apply(x, 2, function(z) z - mean(z))
-  h <- svd(x, nu = p, nv = p)
-  return(tcrossprod(h$u, h$v %*% diag(h$d[1:p])))
-}
-
-

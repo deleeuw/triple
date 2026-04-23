@@ -281,7 +281,7 @@
 
 \title{Matrix Approximation with Kronecker and Precision Weighting}
 \author{Jan de Leeuw \and Jan Graffelman}
-\date{April 22, 2026}
+\date{April 23, 2026}
 \begin{document}
 \maketitle
 \begin{abstract}
@@ -306,17 +306,19 @@ can be found at \url{https://github.com/deleeuw/triple}
 
 \section{Introduction}\label{introduction}
 
-The problem addressed in this note is to approximate a given
+The problem addressed in this paper is to approximate a given
 \(n\times m\) matrix \(Y\) by a \(n\times m\) matrix \(X\) which must be
 in a given subset \(\mathbb{X}\) of \(\mathbb{R}^{n\times m}\). For
 example, \(\mathbb{X}\) can be the \(n\times m\) matrices of rank less
 than or equal to \(p\), or a set of special matrices, such as the Hankel
 or Cauchy matrices.
 
-We measure loss using a loss function proposed in Graffelman
-(\citeproc{ref-graffelman_26a}{2026b}). \begin{equation}
+We measure loss using a loss
+function\footnote{The symbol $:=$ is used for definitions. Symbol $\circ$ is used for Hadamard (elementwise) multiplication.}
+proposed in Graffelman (\citeproc{ref-graffelman_26a}{2026b}).
+\begin{equation}
 \sigma(X):=\text{tr}\ R(W\circ(Y-X))C(W\circ(Y-X))'.\label{eq-loss}
-\end{equation} In Definition \eqref{eq-loss} \(R\) and \(C\) are given
+\end{equation} In definition \eqref{eq-loss} \(R\) and \(C\) are given
 positive semi-definite matrices of orders \(n\) and \(m\), which define
 the \emph{Kronecker weights}. The Kronecker weights can be, for example,
 inverse covariance matrices for row and column entries, as in the matrix
@@ -324,7 +326,6 @@ variate normal distribution (Gupta and Nagar
 (\citeproc{ref-gupta_nagar_00}{2000})). The \(n\times m\) matrix \(W\)
 of \emph{precision weights} has positive entries, which can be, for
 example, inverse standard errors of the corresponding entries of \(Y\).
-The symbol \(\circ\) is used for Hadamard (elementwise) multiplication.
 
 Loss function \eqref{eq-loss} has many well-known special cases. If all
 weights are equal to one then we recover correspondence analysis,
@@ -348,40 +349,42 @@ are special cases.
 Our algorithms use majorization. See Lange
 (\citeproc{ref-lange_16}{2016}) or De Leeuw
 (\citeproc{ref-deleeuw_B_21c}{2022}) for comprehensive discussions of
-majorization (or MM). Majorization is used to reduce the weighted least
-squares problem to an unweighted least squares problem, which is
-generally much easier to solve. Similar applications of MM are in Kiers
-(\citeproc{ref-kiers_97}{1997}) and in Groenen et al.
+majorization (or MM). In this paper majorization is used to reduce the
+weighted least squares problem to an unweighted least squares problem,
+which is generally much easier to solve. Similar applications of MM are
+in Kiers (\citeproc{ref-kiers_97}{1997}) and in Groenen et al.
 (\citeproc{ref-groenen_giaquinto_kiers_03}{2003}).
 
 \subsection{Simple Majorization}\label{simple-majorization}
 
-We first \emph{vectorize} the problem. This means replacing the
-definition \eqref{eq-loss} that uses matrices by an equivalent
-definition in terms of vectors, which is easier to work with. Define
-\(x:=\text{vec}(X)\) and \(y:=\text{vec}(X)\). Loss becomes
-\begin{equation}
+We first \emph{vectorize} the problem. This means replacing definition
+\eqref{eq-loss} that uses matrices by an equivalent definition in terms
+of vectors. Vectors are easier to work with. Define \(x:=\text{vec}(X)\)
+and \(y:=\text{vec}(X)\). Loss becomes \begin{equation}
 \sigma(x):=(y-x)'W_D(C\otimes R)W_D(y-x).\label{eq-lossv}
 \end{equation} In \eqref{eq-lossv} matrix \(W_D\) is the diagonal matrix
 with the elements of \(\text{vec}(W)\) on the diagonal.
 
 Suppose \(\lambda\) is any number larger than or equal to the largest
-eigenvalue \(\lambda_{\text{max}}(H)\) of \(H:=W_D(C\otimes R)W_D\).
-Then, for all \(x\) and \(\tilde x\) substitute
-\(x=\tilde x+(x-\tilde x)\) in \eqref{eq-lossv}. This gives
-\begin{align}
+eigenvalue \(\lambda_{\text{max}}(H)\) of the matrix \begin{equation}
+H:=W_D(C\otimes R)W_D.\label{eq-hdef}
+\end{equation} Suppose \(\tilde x\) is another vector of the same length
+as \(x\). Use \(x=\tilde x+(x-\tilde x)\) in \eqref{eq-lossv}. For all
+\(x\) and \(\tilde x\) we
+have\footnote{We use $\|.\|^2$ for the (unweighted)
+sum of squares.}, \begin{align}
 \sigma(x)&=((y-\tilde x)-(x-\tilde x))'H((y-\tilde x)-(x-\tilde x))\notag\\
 &=\sigma(\tilde x)-2(x-\tilde x)'H(y-\tilde x)+(x-\tilde x)'H(x-\tilde x)\notag\\
 &\leq\sigma(\tilde x)-2(x-\tilde x)'H(y-\tilde x)+\lambda\|x-\tilde x\|^2\notag\\
 &=\sigma(\tilde x)+\lambda\|x-\tilde y\|^2-\lambda^{-1}\|H(y-\tilde x)\|^2,
 \end{align} with \begin{equation}
-\tilde y:=\tilde x+\lambda^{-1}H(y-\tilde x).
+\tilde y:=\tilde x+\lambda^{-1}H(y-\tilde x).\label{eq-ytrip}
 \end{equation}
 
 A majorization (MM) step minimizes \(\|x-\tilde y\|^2\) over the \(x\)
 satisfying the constraints. If we now \emph{matricize} (the inverse of
-vectorize) it follows that we have to minimize \(\|X-\tilde Y\|^2\),
-over \(\mathbb{X}\) with \begin{equation}
+vectorize) definition \eqref{eq-ytrip} it follows that we have to
+minimize \(\|X-\tilde Y\|^2\) over \(\mathbb{X}\), with \begin{equation}
 \tilde Y:=\tilde X+\lambda^{-1}W\circ\{R(W\circ(Y-\tilde X))C\}.
 \end{equation} Note that this expression for \(\tilde Y\) does not use
 the (possibly very large) Kronecker product \(H\). If computing the
@@ -395,15 +398,16 @@ upper bound. \begin{multline}
 
 \subsection{Nested Majorization}\label{nested-majorization}
 
-There is a more radical way to avoid computing the largest eigenvalue of
-\(H\). We employ two nested majorizations. In the first majorization we
-get rid of the Kronecker weighting and reduce each MM iteration to a
-weighted least squares problem that is separable, i.e.~has a diagonal
-weight matrix. The second majorization is used to make a further
-reduction of this separable weighted least squares problem to a sequence
-of unweighted least squares problems. The majorizations are nested, in
-the sense that we need one or more iterations of the second majorization
-process within each iteration of the first majorization process.
+There is a more circumspect way to avoid computing the largest
+eigenvalue of \(H\). We employ two nested majorizations. In the first
+majorization we get rid of the Kronecker weighting and reduce each MM
+iteration to a weighted least squares problem that is separable,
+i.e.~has a diagonal weight matrix. The second majorization is used to
+make a further reduction of this separable weighted least squares
+problem to a sequence of unweighted least squares problems. The
+majorizations are nested, in the sense that we need one or more
+iterations of the second majorization process within each iteration of
+the first majorization process.
 
 \subsubsection{First Majorization}\label{first-majorization}
 
@@ -418,32 +422,32 @@ z'Hz\leq\lambda_{\text{max}}(C\otimes R)z'W_D^2z=\lambda_{\text{max}}(C)\lambda_
 &=\sigma(\tilde x)-2(x-\tilde x)'H(y-\tilde x)+(x-\tilde x)'H(x-\tilde x)\notag\\
 &\leq\sigma(\tilde x)-2(x-\tilde x)'H(y-\tilde x)+\lambda(x-\tilde x)'W_D^2(x-\tilde x)\notag\\
 &=\sigma(\tilde x)+\lambda(x-\tilde y)'W_D^2(x-\tilde y)+\lambda^{-1}(y-\tilde x)'HW_D^{-2}H(y-\tilde x)
-\end{align}
-
-\begin{equation}
+\end{align} The target for the projection becomes \begin{equation}
 \tilde y:=\tilde x+\lambda^{-1}W_D^{-2}H(y-\tilde x),
 \end{equation} which can be matricized to \begin{equation}
-\tilde Y:=\tilde X+\lambda^{-1}W^{-1}\circ\{R(W\circ(Y-\tilde X))C\}.
-\end{equation}
+\tilde Y:=\tilde X+\lambda^{-1}W^{-1}\circ\{R(W\circ(Y-\tilde X))C\}.\label{eq-ynest}
+\end{equation} Note that in definition \eqref{eq-ynest} \(W^{-1}\) is
+the elementwise inverse of \(W\).
 
 \subsubsection{Second majorization}\label{second-majorization}
 
 In the ``inner'' majorization we need to minimize \begin{equation}
-\sum_{i=1}^n\sum_{j=1}^nw_{ij}^2(\tilde y_{ij}-x_{ij})^2\label{eq-inloss}
+S_W(X):-\sum_{i=1}^n\sum_{j=1}^nw_{ij}^2(\tilde y_{ij}-x_{ij})^2\label{eq-inloss}
 \end{equation} over \(X\in\mathbb{X}\). Note that in the inner
 iterations the ``target'' \(\tilde Y\) is the same in each iteration,
 because it only changes in the outer iterations. Minimizing (or
 decreasing) \eqref{eq-inloss} can be done with the wAddPCA() function
 from the Correlplot package ({Graffelman and de Leeuw}
-(\citeproc{ref-graffelman_deleeuw_M_26}{2026})).
+(\citeproc{ref-graffelman_deleeuw_M_26}{2026})), but we for ease of
+reference we give the majorization for the inner iterations.
 
-The majorization for the inner iterations is simple. The same quadratic
-majorization reasoning as in the previous sections leads to the
-unweighted problem of minimizing \begin{equation}
-\sum_{i=1}^n\sum_{j=1}^n(\tilde{\tilde y}_{ij}-x_{ij})^2,
+The same quadratic majorization reasoning as in the previous sections
+leads to the unweighted problem of minimizing \begin{equation}
+S(X):=\|\tilde{\tilde Y}-X\|^2,
 \end{equation} with \begin{equation}
 \tilde{\tilde y}_{ij}:=\tilde x_{ij}+\frac{w_{ij}^2}{w^2_{\text{max}}}(\tilde y_{ij}-\tilde x_{ij}).
-\end{equation}
+\end{equation} Inner iterations project \(\tilde{\tilde Y}\) on
+\(\mathbb{X}\) using unweighted least squares.
 
 \sectionbreak
 
@@ -452,7 +456,8 @@ unweighted problem of minimizing \begin{equation}
 The github repository at \url{https://github.com/deleeuw/triple} has the
 file triple.R, which constains the function triple(), for simple
 majorization, and the file nested.R with the R program nested(), for
-nested majorization.
+nested majorization. The file auxiliary.R has routines for different
+unweighted least squares projections in matrix space.
 
 \subsection{Arguments}\label{arguments}
 
@@ -487,20 +492,39 @@ NULL
 The arguments are mostly self-explanotory. An exception is perhaps the
 func parameter. which is a separate R routine that performs the
 unweighted least squares projection on \(\mathbb{X}\). Parameter \(p\)
-has additional parameters for func, if needed. The default uses the
-truncated SVD for low-rank matrix approximation with \(p=2\). The
-initial estimate is the unweighted projection of the data matrix,
-without taking any of the weight matrices into account. Note that
-nested() has stopping parameters itmax and eps for the outer iterations
-and inmax and ips for the inner iterations.
+is a vector or list of additional parameters for func, if needed. The
+default func uses the truncated SVD for low-rank matrix approximation
+with \(p=2\). If xini is NULL (the default) then the initial estimate
+for both triple() and nested() is the unweighted projection of the data
+matrix, without taking any of the weight matrices into account. If xini
+is non-NULL it is used as the initial estimate. If verbose is TRUE then
+information for each iteration is written to stdout. Otherwise the
+programs are silent until they are done. Note that nested() has stopping
+parameters itmax and eps for the outer iterations and inmax and ips for
+the inner iterations.
 
 \subsection{Values}\label{values}
 
+Both triple() and nested return a list with three elements.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{list}\NormalTok{(}\AttributeTok{x =}\NormalTok{ xnew, }\AttributeTok{loss =}\NormalTok{ snew, }\AttributeTok{itel =}\NormalTok{ itel)}
+\end{Highlighting}
+\end{Shaded}
+
+If the verbose parameter is true then triple() writes itel, sold, snew,
+and epsi to stdout. Here epsi is the sup norm of the difference between
+the current and the previous solution of \(X\). For nested() the
+iteration output also includes ntel (the number of inner iterations in
+the current outer iteration) and ipsi (the sup norm of the difference
+between xold and xnew for the last inner iteration).
+
 \subsection{Projection Routines}\label{projection-routines}
 
-The file auxiliary.R has routines for unweighted least squares
-projection in matrix space. This defines possible values for the func
-parameter of triple() and nested().
+The routines in auxiliary.R define possible values for the func
+parameter of triple() and nested(). Users can add their own functions as
+needed. Currently we have
 
 \begin{itemize}
 \tightlist
@@ -524,7 +548,8 @@ parameter of triple() and nested().
   anti\_symmetric() finds the best fitting anti-symmetric matrix (square
   matrices only).
 \item
-  finds the best fitting additive matrix (i.e.~with \(x_{ij}=a_i+b_j\))
+  additive() finds the best fitting additive matrix (i.e.~with
+  \(x_{ij}=a_i+b_j\)).
 \end{itemize}
 
 \sectionbreak
