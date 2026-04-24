@@ -391,8 +391,10 @@ If the Eckart-Young projection, for example, is parametrized as $X=AB'$,
 then we should not look at the change in $A$ and $B$ from one iteration  to the next, but in the change of $AB'$. In MDS we should not look at the
 change in the configuration, but in the change of the distances.
 
-For large examples that would be impractical. It suggests that acceleration techniques are needed. As currently implemented all projections, such as Eckart-Young, have a cold start, i.e. do not use projections in previous iterations. This is clearly wasteful.
-
+For large examples the slow convergence will be impractical. It suggests that acceleration techniques are needed. As currently implemented all projections, such as Eckart-Young, have a cold start, i.e. do not use projections in previous iterations. This is clearly wasteful. In addition it may be worthwhile to
+implement acceleration methods for fixed point iterations such as the ones in 
+@sidi_17. The acceleration proposed by @lepage_saucier_24 was recently 
+implemented in smacof (@deleeuw_E_25b).
 
 
 
