@@ -2,20 +2,6 @@ loss <- function(x, rmat, cmat) {
   return(sum((rmat %*% x %*% cmat) * x))
 }
 
-decompose <- function(xmat, rmat, cmat) {
-  n <- nrow(xmat)
-  m <- ncol(xmat)
-  pmat <- matrix(colSums(rmat), n, n, byrow = TRUE) / sum(rmat)
-  qmat <- matrix(rowSums(cmat), m, m) / sum(cmat)
-  px <- pmat %*% xmat
-  xq <- xmat %*% qmat
-  mu <- px %*% qmat
-  ae <- px - mu
-  eb <- xq - mu
-  ab <- xmat - ae - eb - mu
-  print()
-}
-
 eckart_young <- function(x, p) {
   h <- svd(x, nu = p, nv = p)
   if (p == 1) {
@@ -26,23 +12,22 @@ eckart_young <- function(x, p) {
 }
 
 column_adjust <- function(x, p) {
-  x <- t(apply(x, 1, function(z)
-    z - mean(z)))
-  return(eckart_young(x, p))
+  m <- outer(rep(1, nrow(x)), apply(x, 2, mean))
+  return(m + eckart_young(x - m, p))
 }
 
 row_adjust <- function(x, p) {
-  x <- apply(x, 2, function(z)
-    z - mean(z))
-  return(eckart_young(x, p))
+  m <- outer(apply(x, 1, mean), rep(1, ncol(x)))
+  return(m + eckart_young(x - m, p))
 }
 
-double_center <- function(x, p) {
+double_adjust <- function(x, p) {
   rm <- apply(x, 1, mean)
   cm <- apply(x, 2, mean)
   mm <- mean(x)
-  x <- x - outer(rm, cm, "+") + mm
-  return(eckart_young(x, p))
+  rc <- outer(rm, cm, "+") - mm
+  x <- x - rc
+  return(rc + eckart_young(x, p))
 }
 
 hankel <- function(x, p) {
