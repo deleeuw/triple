@@ -152,7 +152,7 @@ within each iteration of the first majorization process.
 
 ### First Majorization
 
-Start with the same vectorization we used before in our simple majorization But instead of
+Start with the same vectorization we used before in our simple majorization. But instead of
 majorizing by using $z'Hz\leq\lambda_{\text{max}}(H)z'z$ we use
 \begin{equation}
 z'Hz\leq\lambda_{\text{max}}(C\otimes R)z'W_D^2z=\lambda_{\text{max}}(C)\lambda_{\text{max}}(R)z'W_D^2z.
