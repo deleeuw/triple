@@ -2,21 +2,39 @@ loss <- function(x, rmat, cmat) {
   return(sum((rmat %*% x %*% cmat) * x))
 }
 
+decompose <- function(xmat, rmat, cmat) {
+  n <- nrow(xmat)
+  m <- ncol(xmat)
+  pmat <- matrix(colSums(rmat), n, n, byrow = TRUE) / sum(rmat)
+  qmat <- matrix(rowSums(cmat), m, m) / sum(cmat)
+  px <- pmat %*% xmat
+  xq <- xmat %*% qmat
+  mu <- px %*% qmat
+  ae <- px - mu
+  eb <- xq - mu
+  ab <- xmat - ae - eb - mu
+  print()
+}
+
 eckart_young <- function(x, p) {
   h <- svd(x, nu = p, nv = p)
-  return(tcrossprod(h$u, h$v %*% diag(h$d[1:p])))
+  if (p == 1) {
+    return(h$d[1] * outer(drop(h$u), drop(h$v)))
+  } else {
+    return(tcrossprod(h$u, h$v %*% diag(h$d[1:p])))
+  }
 }
 
 column_adjust <- function(x, p) {
-  x <- t(apply(x, 1, function(z) z - mean(z)))
-  h <- svd(x, nu = p, nv = p)
-  return(tcrossprod(h$u, h$v %*% diag(h$d[1:p])))
+  x <- t(apply(x, 1, function(z)
+    z - mean(z)))
+  return(eckart_young(x, p))
 }
 
 row_adjust <- function(x, p) {
-  x <- apply(x, 2, function(z) z - mean(z))
-  h <- svd(x, nu = p, nv = p)
-  return(tcrossprod(h$u, h$v %*% diag(h$d[1:p])))
+  x <- apply(x, 2, function(z)
+    z - mean(z))
+  return(eckart_young(x, p))
 }
 
 double_center <- function(x, p) {
@@ -24,8 +42,7 @@ double_center <- function(x, p) {
   cm <- apply(x, 2, mean)
   mm <- mean(x)
   x <- x - outer(rm, cm, "+") + mm
-  h <- svd(x, nu = p, nv = p)
-  return(tcrossprod(h$u, h$v %*% diag(h$d[1:p])))
+  return(eckart_young(x, p))
 }
 
 hankel <- function(x, p) {
@@ -34,7 +51,7 @@ hankel <- function(x, p) {
   z <- array(0, dim(x))
   for (i in (1 - n):(n - 1)) {
     y <- ifelse(outer(m, rev(m), "-") == i, 1, 0)
-    z <- z + (sum(y * x) / sum(y)) * y 
+    z <- z + (sum(y * x) / sum(y)) * y
   }
   return(z)
 }
@@ -45,7 +62,7 @@ toeplitz <- function(x) {
   z <- array(0, dim(x))
   for (i in (1 - n):(n - 1)) {
     y <- ifelse(outer(m, m, "-") == i, 1, 0)
-    z <- z + (sum(y * x) / sum(y)) * y 
+    z <- z + (sum(y * x) / sum(y)) * y
   }
   return(z)
 }

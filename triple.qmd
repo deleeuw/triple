@@ -39,7 +39,7 @@ papersize: letter
 graphics: true
 link-citations: true
 mainfont: Times New Roman
-abstract: TBD
+abstract: Majorization (or MM) algorithms for matrix approximation, using minimization of triple-weighted least squares loss functions, are developed. Loss functions combine matrix variate weights (or Kronecker weights) with elementwise (or precision) weights. Implementations in R are provided.
 ---
 
 ```{r load_packages, echo = FALSE}
@@ -224,10 +224,10 @@ Both triple() and nested return a list with three elements.
 list(x = xnew, loss = snew, itel = itel)
 ```
 If the verbose parameter is true then triple() writes itel, sold, snew, and epsi
-to stdout. Here epsi is the sup norm of the difference between the current and
+to stdout. Here epsi is the sup-norm of the difference between the current and
 the previous solution of $X$. For nested() the iteration output also includes
 ntel (the number of inner iterations in the current outer iteration) and ipsi
-(the sup norm of the difference between xold and xnew for the last inner 
+(the sup-norm of the difference between xold and xnew for the last inner 
 iteration). 
 
 ## Projection Routines
@@ -249,11 +249,13 @@ own functions as needed. Currently we have
 
 \sectionbreak
 
-# Example
+# Examples
+
+## Artificial
 
 We analyze a small artifical example, generated from random data.
 
-## Data
+### Data
 
 ```{r}
 ymat
@@ -268,7 +270,7 @@ cmat
 wmat
 ```
 
-## Triple
+### Triple
 
 ```{r}
 h <- triple(ymat, rmat = rmat, cmat = cmat, wmat = wmat, verbose = FALSE)
@@ -277,7 +279,7 @@ h$loss
 h$x
 ```
 
-## Nested, inmax = 1
+### Nested, inmax = 1
 
 ```{r}
 h <- nested(ymat, rmat = rmat, cmat = cmat, wmat = wmat, inmax = 1, verbose = FALSE)
@@ -286,7 +288,7 @@ h$loss
 h$x
 ```
 
-## Nested, inmax = 5
+### Nested, inmax = 5
 
 ```{r}
 h <- nested(ymat, rmat = rmat, cmat = cmat, wmat = wmat, inmax = 5, verbose = FALSE)
@@ -295,7 +297,7 @@ h$loss
 h$x
 ```
 
-## Nested, inmax = 10
+### Nested, inmax = 10
 
 ```{r}
 h <- nested(ymat, rmat = rmat, cmat = cmat, wmat = wmat, inmax = 10, verbose = FALSE)
@@ -304,7 +306,7 @@ h$loss
 h$x
 ```
 
-## Nested, inmax = 100
+### Nested, inmax = 100
 
 ```{r}
 h <- nested(ymat, rmat = rmat, cmat = cmat, wmat = wmat, inmax = 100, verbose = FALSE)
@@ -312,6 +314,88 @@ h$itel
 h$loss
 h$x
 ```
+
+### Conclusion
+
+The artificial example is a minimal form of quality control. It shows us
+that triple() and the various nested() versions converge (at least stop
+before reaching the 100,000 iteration limit), and all converge to the 
+same solution (when started at the same initial point and when using the
+same stop criteria). 
+
+The example also shows us that convergence can be very slow and close to 
+sublinear. Function triple() uses about 30,000 iterations, and nested() with
+a single inner iteration uses about 60,000 iterations. That means, in this
+case, 30,000 or 60,000 Eckart-Young decompositions. Ouch !
+
+## Correspondence Analysis
+
+In correspondence analysis and multiple correspondence analysis 
+the Kronecker weight are the diagonal matrices with the 
+reciprocals of the marginals of the table.
+```{r}
+library(anacor)
+data(galton)
+ymat <- as.matrix(galton) / sum(galton)
+rmat <- diag(1 / rowSums(ymat))
+cmat <- diag(1 / colSums(ymat))
+wmat <- array(1, dim(ymat))
+h <- triple(ymat, wmat, rmat, cmat, p = 2, verbose = FALSE)
+#print(h$x)
+#print(h$itel)
+#print(h$loss)
+#svd(h$x)
+```
+
+## Canonical Analysis
+
+## Triple Weighting
+
+\sectionbreak
+
+# Discussion
+
+The complications in minimizing loss function \eqref{eq-loss} arise from the
+combination of the $(R,C)$ and the $W$ weights. If either one of these two
+sets of weights is removed (or set equal to the identity) minimization becomes
+much easier. 
+One of the two majorizations in the nested process disappears.
+There is no need for the largest eigenvalue of the large matrix $H$ from
+\eqref{eq-hdef}. The same thing is true if we replace loss function
+\eqref{eq-loss} by
+\begin{equation}
+\sigma(X):=\text{tr}\ R(W\circ(Y)-X)C(W\circ(Y)-X)'.\label{eq-lossno}
+\end{equation}
+In that case we also only need the first majorization applied to $W\circ(Y)$.
+
+The distinction between simple an nested majorization is relative. In simple
+majorization we may need to solve an eigenvalue problem in each iteration,
+and the eigenvalue computation itself defines an inner iteration. In that sense
+simple majorization is also nested, we just call it simple because eigenvalue
+computations are implemented as black boxes that had the iteration details. We could implement our projections as explicit iterative processes
+with update rules and stop criteria. In that case our nested majorization
+will have outer, inner, and innermost iterations and three sets of stop
+criteria.
+
+In many previous majorization methods the stop criterion is defined
+using a decrease in the loss function from one iteration to the next of
+less than epsilon. In triple() and nested() we prefer to use the
+sup-norm of the change in the solution from one iteration to the next. 
+This is a stricter criterion, because solutions generally converge 
+slower than loss functions. It is also more satisfactory, because
+change in the solution measures basically how well the conditions
+for stationarity (vanishing of the gradient or the Karush-Kuhn-Tucker
+conditions in the constrained case) are satisfied. By computing
+the change in the projections we also circumvent identifiabilty problems.
+If the Eckart-Young projection, for example, is parametrized as $X=AB'$,
+then we should not look at the change in $A$ and $B$ from one iteration  to the next, but in the change of $AB'$. In MDS we should not look at the
+change in the configuration, but in the change of the distances.
+
+For large examples that would be impractical. It suggests that acceleration techniques are needed. As currently implemented all projections, such as Eckart-Young, have a cold start, i.e. do not use projections in previous iterations. This is clearly wasteful.
+
+
+
+
 
 \sectionbreak
 
